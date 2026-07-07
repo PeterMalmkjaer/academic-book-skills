@@ -1,22 +1,18 @@
 ---
 name: academic-source-verification
 description: >-
-  Kilde- og citationsverifikation for akademiske manuskripter (lærebøger,
-  monografier, flerkapitelværker) MED et transparent, reproducerbart revisionsspor
-  — et ansvarlighedsinstrument over for forlag og læser. Brug, når brugeren vil
-  verificere, at bogens kilder (a) findes og har korrekt metadata (forfatter/titel/
-  journal/år/DOI), (b) ikke er trukket tilbage/korrigeret, og (c) faktisk siger det,
-  teksten påstår — og vil have det DOKUMENTERET i en hovedbog (regneark/ledger) plus
-  en afledt AI-/kildedeklaration til forord/kolofon. Producerer og VEDLIGEHOLDER
-  reference-audit-regnearket (T1-hovedbogen) med provenans pr. kilde: metoder,
-  evidens (DOI/URL/bog-sted), antal kilder, retraktionsstatus, claim-støtte,
-  menneskelig sign-off, værktøj+version, dato. Triggere: "verificér kilderne",
-  "kilde-verifikation", "opdatér reference-regnearket", "T1-verifikation", "er
-  citationen korrekt", "tjek for tilbagetrukne kilder", "lav AI-/kildedeklaration",
-  "dokumentér referencetjek". OPT-IN / eksplicit. FLAGGER og foreslår — ændrer
-  ALDRIG kilde, citation, tal eller mening uden eksplicit OK; læs-kun over for
-  manuskriptet. IKKE til intern konsistens/nummerering/krydsref (det er søsteren
-  pm-konsistens-audit); IKKE til oversættelse; IKKE til register/sprog.
+  Kilde- og citationsverifikation for akademiske manuskripter (lærebøger, monografier)
+  med et transparent revisionsspor — et ansvarlighedsinstrument over for forlag og
+  læser. Brug, når brugeren vil verificere, at bogens kilder (a) findes og har korrekt
+  metadata (forfatter/titel/journal/år/DOI), (b) ikke er trukket tilbage, og (c) faktisk
+  siger det, teksten påstår — og vil have det DOKUMENTERET i en hovedbog (regneark) plus
+  en afledt AI-/kildedeklaration. Producerer og vedligeholder reference-audit-regnearket
+  med provenans pr. kilde: metoder, evidens (DOI/URL), antal kilder, retraktionsstatus,
+  claim-støtte, menneskelig sign-off, værktøj+dato. Triggere: 'kilde-verifikation',
+  'verificér kilderne', 'opdatér reference-regnearket', 'T1-verifikation', 'tjek for
+  tilbagetrukne kilder', 'lav AI-deklaration'. OPT-IN. FLAGGER og foreslår — ændrer
+  aldrig kilde, citation eller tal uden eksplicit OK; læs-kun. IKKE til intern
+  konsistens/krydsref (det er pm-konsistens-audit); IKKE til oversættelse eller register.
 license: MIT
 metadata:
   family: academic-book
