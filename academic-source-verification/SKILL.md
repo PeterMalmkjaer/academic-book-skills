@@ -18,7 +18,7 @@ metadata:
   family: academic-book
   siblings: pm-konsistens-audit
   related: cbs-libsearch (fuldtekst-/annotationsbackend), academic-english-consistency, academic-danish-consistency
-  version: 0.1.0
+  version: 0.1.1
 ---
 
 # Akademisk kilde-verifikation (ekstern sandhed + revisionsspor)
@@ -131,6 +131,27 @@ Regel: **ingen kilde markeres verificeret uden en tilsvarende, provenans-fyldt r
 
 ---
 
+## Præsentation — hovedbogen skal være overskuelig
+
+Hovedbogen er et revisionsspor, forlag og læsere kan blive bedt om at se; derfor skal det
+emitterede regneark være **pænt og overskueligt**, ikke bare korrekt. Konventionen
+(obligatorisk; anvendes deterministisk af `scripts/ledger_format.py`, fuld spec i
+`references/regneark_layout.md`):
+
+- **Fane-rækkefølge:** `Læsevejledning` (forrest) → `Oversigt` → datafaner → `Fejl fundet & rettet` (bagerst).
+- **Læsevejledning** forrest: fane-indhold + fuld kolonne-legende + udfoldede metode-koder +
+  værdi-vokabularer + note om, at `ikke tjekket` er et *ærligt* signal. **Ingen forkortelse
+  uden forklaring** — brug forkortelser, en læser forstår.
+- **Datafaner:** stylede, frosne overskrifter, autofilter, tilpassede kolonnebredder,
+  tekstombrydning på lange felter, let stribning.
+- **Fejl-/rapportside bagerst:** kort rapporttekst + fejltabel (`# · Type · Kilde/sted ·
+  Kapitel · Hvad var forkert · Rettelse · Verificeret via · Konfidens · Delt m. DA? ·
+  DA-pendant · RUN · Status`).
+
+Skriv aldrig til masteren; formatér altid en versioneret kopi.
+
+---
+
 ## Deklarationsprodukter (afledt af hovedbogen)
 
 Genereres fra hovedbogen, så bogen opfylder forlagenes transparens-/ansvarlighedskrav:
@@ -192,6 +213,9 @@ autoritativ alene — konvergens mellem flere er standarden.
 
 ## Filer
 - `references/ledger_schema.md` — fulde kolonne-definitioner + tilladte værdier + eksempler.
+- `references/regneark_layout.md` — layout- & præsentationskonvention (faner, legende, formatering, fejlside).
 - `references/declaration_templates.md` — skabeloner: in-book erklæring, AI-appendiks, metodenotat.
 - `scripts/ledger_build.py` — læs-kun hjælper: seeder ledger fra `references.bib`, udtrækker
   in-text-cites, flagger fantom/forældreløs, emitterer ledger-skelet med provenans-kolonner.
+- `scripts/ledger_format.py` — anvender præsentationskonventionen (styling + Læsevejledning +
+  fejl-/rapportside) på en versioneret kopi; skriver aldrig til master.

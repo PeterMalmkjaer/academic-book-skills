@@ -3,6 +3,16 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [0.2.1] — 2026-07-07
+
+### Added
+- `academic-source-verification`: a **presentation convention** for the emitted ledger so the
+  regneark is readable, not just correct — front `Læsevejledning` legend sheet (tab index + full
+  column/abbreviation legend), styled/frozen/filtered data sheets with tuned widths + wrapping +
+  banding, and a back `Fejl fundet & rettet` report sheet. New `references/regneark_layout.md`
+  (the spec) and `scripts/ledger_format.py` (deterministic formatter; writes a versioned copy,
+  never the master). Added a "Præsentation" section to SKILL.md; skill bumped to 0.1.1.
+
 ## [0.2.0] — 2026-07-07
 
 ### Added
