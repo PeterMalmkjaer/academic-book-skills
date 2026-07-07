@@ -13,6 +13,7 @@ and [`academic-danish-skills`](https://github.com/PeterMalmkjaer/academic-danish
 | `faglig-bog` | DA | Danish sibling of `academic-book`: skabeloner og praksis for faglig bog/monografi i LaTeX. |
 | `pm-bog` | DA | OPT-IN. Project-specific baseline for the Performance-Management textbook (chapter structure, build, box definitions, workflow). |
 | `pm-konsistens-audit` | DA | Numbering / float-continuity / cross-reference audit of a LaTeX book (fortløbende numre; dangling §/Boks/Case/Figur/Tabel-henvisninger; register- og appendiks-konsistens). Includes `scripts/audit_all.py`. |
+| `academic-source-verification` | DA | Source & citation verification (external truth) **plus a transparent, reproducible audit ledger** — an accountability instrument for publisher/reader. Three checks: reference correctness, retraction/reliability, claim–source fidelity. Produces/maintains the reference-audit ledger (provenance per source) + derives the in-book AI/source declaration. Companion to `pm-konsistens-audit` (which owns internal consistency + phantom/orphan detection). |
 
 ## Pipeline ordering (read this first)
 
@@ -21,11 +22,16 @@ text is frozen** — never before content, register and consistency are locked:
 
 ```
 A. Content & correctness  (translation → facts/citations → cross-references → register/narrative → grammar)
-B. Consistency            (spelling / house-style)
+B. Consistency            (spelling / house-style; pm-konsistens-audit: numbers, cross-refs, phantom/orphan)
    ▶▶▶  TEXT FREEZE  ◀◀◀
-C. Form & layout          (pm-konsistens-audit → academic-book/faglig-bog/pm-bog: typography/overfull → cover)
-D. Final build            (real build: pages, 0 undefined, overfull count, visual check)
+C. Source verification    (academic-source-verification — external truth on the frozen text + declaration)
+D. Form & layout          (academic-book/faglig-bog/pm-bog: typography/overfull → cover)
+E. Final build            (real build: pages, 0 undefined, overfull count, visual check)
 ```
+
+`academic-source-verification` runs at the text-freeze boundary: it checks the *final*
+restated text against external sources (a late citation edit re-opens verification), and it
+consumes phantom/orphan flags from `pm-konsistens-audit`.
 
 **Iron rule:** any word-count change made *after* a typography pass reflows the book and
 invalidates it — re-run typography + build. Each SKILL.md carries this note.

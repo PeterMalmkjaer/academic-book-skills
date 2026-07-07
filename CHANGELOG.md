@@ -3,6 +3,22 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [0.2.0] — 2026-07-07
+
+### Added
+- New skill **`academic-source-verification`** (DA) — source & citation verification (external
+  truth) plus a transparent, reproducible **audit ledger** used as an accountability instrument
+  toward publisher and reader. Three checks: (1) reference correctness (CrossRef/DOI/OpenAlex/
+  Semantic Scholar), (2) retraction/reliability (Retraction Watch/Crossmark/scite), (3) claim–
+  source fidelity (primary source/Elicit/scite/cbs-libsearch annotations). Produces/maintains the
+  reference-audit ledger with per-source provenance (methods, evidence, n-sources, retraction
+  status, claim support, human sign-off, tool+version, date) and derives the in-book AI/source
+  declaration. Includes `references/ledger_schema.md`, `references/declaration_templates.md`, and
+  a read-only `scripts/ledger_build.py` (seeds the ledger, extracts in-text cites, flags phantom/
+  orphan). Runs at the text-freeze boundary; companion to `pm-konsistens-audit` (internal
+  consistency). Prompted by three citation errors that a bib-only audit could not catch (an inline
+  journal misattribution, an appendix table year, and a phantom citation with no bib entry).
+
 ## [0.1.0] — 2026-07-07
 
 ### Added
