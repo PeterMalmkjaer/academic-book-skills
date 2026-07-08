@@ -55,6 +55,16 @@ Spreadsheet with columns: `Concept | Definition | Primary source (author, year) 
 Update at each new central concept. Use as a checklist during proofreading.
 *Critical for translation:* "incitamentsintensitet" (Danish) = "incentive intensity" in Lazear & Gibbs — not "incentive strength" or "reward intensity".
 
+> **Term glosses & parentheticals** — when a term is followed by another term in parentheses
+> (`agency theory (principal-agent theory)`), classify before touching it: redundant self-gloss →
+> delete; genuine synonym → keep + italicise (gloss once, at first use); false calque (a
+> source-language equivalent that is not an established term in the target language, e.g. "the
+> Pawl Effect" for *the ratchet effect*) → delete; missing synonym/abbreviation → add — but only
+> after verifying the alternative name is real in the literature (never invent one), and keeping
+> related-but-distinct terms distinct (*target ratcheting* the practice vs *the ratchet effect* the
+> consequence). Full decision tree, style basis and worked examples:
+> [`references/gloss_and_parenthesis_convention.md`](references/gloss_and_parenthesis_convention.md).
+
 **Template 3 — Clarify reference strategy and verify as you go — not at the end**
 For each chapter: mini reference document with `Reference | Verified (yes/no/partial) | Specific use in text`
 Verify before moving to the next chapter. 15–30 min per chapter. Saves hours at final proofreading.

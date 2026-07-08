@@ -3,6 +3,22 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [0.3.0] — 2026-07-08
+
+### Added
+- `academic-book`: **term-gloss / parenthetical house-style convention**. New
+  `references/gloss_and_parenthesis_convention.md` — a five-category decision tree for the common
+  situation where a term is followed by another term in parentheses (frequent as a leftover
+  translation artifact): redundant self-gloss → delete; genuine synonym → keep + italicise (gloss
+  once, at first use); false calque (source-language equivalent that is not an established
+  target-language term, e.g. "the Pawl Effect" for *the ratchet effect*) → delete; missing
+  synonym/abbreviation → add; true non-gloss parentheticals → leave. Encodes two error-preventing
+  rules: **never invent a synonym** (verify every alternative name via Elicit/Scite/Exa/CrossRef),
+  and **precision over label** (keep related-but-distinct terms distinct — *target ratcheting* the
+  practice vs *the ratchet effect* the consequence; a rational effect is not a cognitive bias).
+  Style basis: APA/Chicago/Turabian (italicise a term at first use) + Farkas (1983). Pointer added
+  from SKILL.md (Template 2). Distilled from a live DA→EN textbook pass.
+
 ## [0.2.3] — 2026-07-08
 
 ### Added
