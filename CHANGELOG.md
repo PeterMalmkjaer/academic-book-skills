@@ -9,9 +9,10 @@ Format loosely follows [Keep a Changelog].
 - `academic-book`: **table column-alignment rule** + **pre-press/PDF-format checklist**.
   SKILL.md gains a "Table column alignment — prefer ragged-right" note (narrow/multi-column
   `p{}`/`X` tables must use `>{\raggedright\arraybackslash}`: justification in narrow columns
-  causes rivers, hyphenation, overfull boxes, and makes the last word of a column hug the next
-  column so they read as "merged"; on a live 400-page book this removed all overfull boxes,
-  19 → 0, with no content change). New `references/prepress_pdf_checklist.md` — a reusable
+  causes rivers, hyphenation, in-column overflow, and makes the last word of a column hug the next
+  column so they read as "merged"; fixes the column-level bunching with no content change, but
+  note it does NOT zero a book's overfull count — remaining overfull boxes usually sit in wide
+  figures/tables/math elsewhere). New `references/prepress_pdf_checklist.md` — a reusable
   pre-press checklist (trim size, image ≥300 dpi, font embedding+subsetting, PDF/X [ISO 15930]
   vs PDF/A [ISO 19005] vs PDF/UA [ISO 14289], CMYK for offset, bleed + crop marks, tagging,
   metadata), with the ordering rule that trim/geometry must be settled BEFORE the final

@@ -182,8 +182,11 @@ make text columns **ragged-right** by prefixing each with `>{\raggedright\arrayb
 ```
 
 Make ragged-right the house default for reference/overview tables and apply it consistently
-across chapters *and* appendices. On a live 400-page textbook this removed **all** overfull
-boxes (19 → 0) with zero content change — the justification was itself the source of the overflow.
+across chapters *and* appendices. On a live 400-page textbook this removed the column-level
+bunching and rivers with zero content change and looked markedly cleaner. Do **not** overclaim
+book-wide overfull elimination, though: ragged-right fixes overflow *inside the narrow columns*,
+but a book's remaining overfull `\hbox`es usually live in wide figures/tables/math elsewhere —
+read the build log to see where they actually are rather than assuming the table pass zeroed them.
 
 ### Build command
 ```bash
