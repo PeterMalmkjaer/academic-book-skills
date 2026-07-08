@@ -3,6 +3,30 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [0.2.3] — 2026-07-08
+
+### Added
+- `academic-source-verification`: **operationalised tjek #3 (claim-support / correct use of source)**.
+  Added `scripts/annotate_claims.py` (highlights the claim-supporting passages in a source PDF →
+  `*_ANNOTATED.pdf`; reports phrases it cannot find = candidates for "wrong source"),
+  `references/annotation_record.md` (the claim → quote → verdict record format), and a "Claim-støtte
+  / korrekt brug — arbejdsgang" section in SKILL.md. Encodes the lesson: metadata/DOI being correct
+  does NOT prove the manuscript uses the source correctly; if a claim is unsupported, find another
+  source — never just fix metadata to "rescue" a wrong source. Skill bumped to 0.1.3.
+
+## [0.2.2] — 2026-07-08
+
+### Added
+- `academic-source-verification`: a **reference-integrity module** — three read-only CrossRef
+  scripts bundled under `scripts/`: `check_dois.py` (DOI resolution + title match),
+  `find_dois.py` (propose the correct DOI for bad ones), and `metadata_check.py` (field-by-field
+  verification of author/journal/volume/pages/year). Battle-tested on a live 206-entry
+  bibliography: caught 27 bad DOIs (dead/wrong-target) and, after removing a false-positive class,
+  2 genuine metadata errors — including entries with fabricated titles/journals and wrong
+  volume/pages that a bib-only or title-only check missed. Key lesson encoded: `metadata_check.py`
+  must NOT field-compare against a low-confidence title match (DOI-less books/cases), or it emits
+  false positives. Skill bumped to 0.1.2.
+
 ## [0.2.1] — 2026-07-07
 
 ### Added

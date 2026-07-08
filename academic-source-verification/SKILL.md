@@ -18,7 +18,7 @@ metadata:
   family: academic-book
   siblings: pm-konsistens-audit
   related: cbs-libsearch (fuldtekst-/annotationsbackend), academic-english-consistency, academic-danish-consistency
-  version: 0.1.1
+  version: 0.1.3
 ---
 
 # Akademisk kilde-verifikation (ekstern sandhed + revisionsspor)
@@ -219,3 +219,24 @@ autoritativ alene — konvergens mellem flere er standarden.
   in-text-cites, flagger fantom/forældreløs, emitterer ledger-skelet med provenans-kolonner.
 - `scripts/ledger_format.py` — anvender præsentationskonventionen (styling + Læsevejledning +
   fejl-/rapportside) på en versioneret kopi; skriver aldrig til master.
+
+### Reference-integritets-modul (CrossRef; kør på maskine med internet)
+- `scripts/check_dois.py` — DOI-resolution + titel-match mod CrossRef → flag døde/forkerte DOI'er (tjek #1/#2). Læs-kun.
+- `scripts/find_dois.py` — foreslår korrekt DOI (CrossRef titel-søgning) for de flagede → REPLACE eller REMOVE. Læs-kun.
+- `scripts/metadata_check.py` — felt-for-felt verifikation (forfatter/journal/bind/sider/år) mod CrossRef. **Vigtigt:** felt-sammenlign ALDRIG mod et lav-konfidens titel-match (DOI-løse bøger/cases → falske positiver); flag i stedet "NO RELIABLE MATCH — verify manually". Læs-kun.
+- Alle tre skriver rapporter (`DOI_CHECK_REPORT.md`, `DOI_FIX_PROPOSALS.md`, `METADATA_CHECK_REPORT.md`) og fødes ind i hovedbogen (ledger). Rettelser i bib/prosa kører altid som separat GATE (backup → assertion pr. edit → byte-diff → build → log).
+
+### Claim-støtte / korrekt brug (tjek #3) — arbejdsgang
+Metadata + DOI siger, at kilden ER den rigtige og korrekt beskrevet. **Tjek #3 siger, at
+manuskriptet BRUGER den rigtigt** — det dybeste og mest oversete tjek. Manuel/LLM-drevet (kræver
+at læse kilden), men fast metode:
+1. Udtræk hver in-text-påstand knyttet til kilden ("Forfatter (år) viser, at …").
+2. Find det konkrete understøttende sted i kilde-fuldteksten (PDF / `cbs-libsearch`).
+3. Verdikt pr. påstand: **støttet / delvist / ikke støttet**. Ved *ikke støttet* → kilden er forkert
+   for den påstand → **find en anden kilde**. Ret ALDRIG bare metadata for at "redde" en forkert kilde.
+4. Dokumentér i en annoterings-record (`references/annotation_record.md`: påstand → citat → verdikt);
+   fyld `claim_støttet` + `annotation_ref` i hovedbogen.
+5. `scripts/annotate_claims.py` highlighter de understøttende passager fysisk i kilde-PDF'en →
+   `*_ANNOTATED.pdf` (auditerbart bevis; rapporterer fraser den ikke kan finde = kandidat til "forkert kilde").
+- `references/annotation_record.md` — format for claim-støtte-record.
+- `scripts/annotate_claims.py` — highlighter claim-understøttende passager i kilde-PDF (PyMuPDF).
