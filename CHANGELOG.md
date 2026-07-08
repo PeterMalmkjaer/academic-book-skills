@@ -3,6 +3,21 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [0.4.0] — 2026-07-08
+
+### Added
+- `academic-book`: **table column-alignment rule** + **pre-press/PDF-format checklist**.
+  SKILL.md gains a "Table column alignment — prefer ragged-right" note (narrow/multi-column
+  `p{}`/`X` tables must use `>{\raggedright\arraybackslash}`: justification in narrow columns
+  causes rivers, hyphenation, overfull boxes, and makes the last word of a column hug the next
+  column so they read as "merged"; on a live 400-page book this removed all overfull boxes,
+  19 → 0, with no content change). New `references/prepress_pdf_checklist.md` — a reusable
+  pre-press checklist (trim size, image ≥300 dpi, font embedding+subsetting, PDF/X [ISO 15930]
+  vs PDF/A [ISO 19005] vs PDF/UA [ISO 14289], CMYK for offset, bleed + crop marks, tagging,
+  metadata), with the ordering rule that trim/geometry must be settled BEFORE the final
+  typography pass (a trim change reflows the book). Pointer added from Template 9 (print quality).
+  Both distilled from a live DA→EN textbook production pass.
+
 ## [0.3.0] — 2026-07-08
 
 ### Added

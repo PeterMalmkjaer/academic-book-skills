@@ -109,6 +109,11 @@ After every 3 chapters: run a full compilation and resolve all overfull hbox war
 Keep a log: `Problem | Chapter | Status (open/resolved/accepted) | Reason if accepted`
 *Concrete fixes:* soft hyphens (`\-`) in long compound words, `\texorpdfstring` for maths in section titles, column widths in longtable, `\chapter[short]{long}` for long titles.
 
+> **Print-ready PDF:** compiling cleanly is not the same as print-ready. For trim size, image
+> dpi, font embedding, PDF/X vs PDF/A, CMYK, bleed and tagging, see
+> [`references/prepress_pdf_checklist.md`](references/prepress_pdf_checklist.md). Settle trim
+> size BEFORE the final typography pass — a trim change reflows the whole book.
+
 **Template 10 — Concept register as a living document**
 For each new element (definition, theory box, case, figure): add to register IMMEDIATELY. 30 seconds per element.
 *Consequence of waiting:* retrospective addition of 83 definitions and 52 theory boxes requires reviewing all chapters.
@@ -158,6 +163,27 @@ One file with three sections:
 | Long compound words (e.g. German/Danish) | Soft hyphens: `med\-ar\-bej\-der\-til\-freds\-heds\-må\-lin\-gen` |
 | Narrow table column | Adjust `p{2.2cm}` → `p{3.5cm}` in longtable |
 | Line break in body text | Rewrite to shorter sentences — `\\` does not work in body text |
+
+### Table column alignment — prefer ragged-right in narrow/multi-column tables
+
+Narrow, multi-column tables set with **justified** `p{}`/`X` columns look bunched: justification
+stretches short cell text to the right edge, so the last word of one column hugs the next column
+(they read as "merged"), and it forces rivers, heavy hyphenation, and overfull `\hbox`es. Fix —
+make text columns **ragged-right** by prefixing each with `>{\raggedright\arraybackslash}`
+(`\arraybackslash` restores `\\` inside `p{}`; needs the `array` package, which `tabularx` loads):
+
+```latex
+% before: \begin{tabular}{p{2.5cm}p{3.5cm}p{3.7cm}}
+% after:
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.5cm}%
+                >{\raggedright\arraybackslash}p{3.5cm}%
+                >{\raggedright\arraybackslash}p{3.7cm}}
+% tabularx X column:  {l >{\raggedright\arraybackslash}X}
+```
+
+Make ragged-right the house default for reference/overview tables and apply it consistently
+across chapters *and* appendices. On a live 400-page textbook this removed **all** overfull
+boxes (19 → 0) with zero content change — the justification was itself the source of the overflow.
 
 ### Build command
 ```bash
