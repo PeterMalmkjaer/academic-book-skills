@@ -97,6 +97,11 @@ Efter hvert 3. kapitel: kør fuld kompilering og løs alle overfull hbox > 20pt.
 Hold log: `Problem | Kapitel | Status (åbent/løst/accepteret) | Begrundelse`
 *Konkrete fixes:* soft hyphens (`\-`) i lange sammensatte ord, `\texorpdfstring` for matematik i section-titler, kolonnebredder i longtable, `\chapter[kort]{lang}` for lange titler.
 
+> **Tryk-klar PDF:** ren kompilering er ikke det samme som tryk-klar. For trim-størrelse,
+> billede-dpi, font-indlejring, PDF/X vs PDF/A, CMYK, bleed og tagging, se
+> [`references/prepress_pdf_checklist.md`](references/prepress_pdf_checklist.md). Sæt
+> trim-størrelse FØR den endelige typografi — en trim-ændring reflower hele bogen.
+
 **Skabelon 10 — Konceptregister som levende dokument**
 For hvert nyt element (definition, theorybox, case, figur): tilføj i register STRAKS. 30 sekunder per element.
 *Konsekvens ved at vente:* retrospektiv tilføjelse af 83 definitioner og 52 theoryboxe kræver gennemgang af alle kapitler.
@@ -146,6 +151,30 @@ Skriv den endelige version SIDST. Forventet at den endelige version ligner lidt 
 | Lange sammensatte ord | Soft hyphens: `med\-ar\-bej\-der\-til\-freds\-heds\-må\-lin\-gen` |
 | Smal tabelkolonne | Justér `p{2.2cm}` → `p{3.5cm}` i longtable |
 | Linjeskift i lang brødtekst | Omskriv til kortere sætninger — `\\` virker ikke i brødtekst |
+
+### Tabel-kolonnejustering — foretræk ragged-right i smalle/fler-kolonne-tabeller
+
+Smalle, fler-kolonne-tabeller sat med **udlignede** `p{}`/`X`-kolonner ser sammenklumpede ud:
+udligningen strækker kort celletekst ud til højre kant, så sidste ord i én kolonne klæber til
+nabokolonnen (de læses som "smeltet sammen"), og det tvinger rivers, hård orddeling og overfull
+`\hbox`es. Fix — gør tekstkolonner **ragged-right** ved at sætte `>{\raggedright\arraybackslash}`
+foran hver (`\arraybackslash` genopretter `\\` inde i `p{}`; kræver `array`-pakken, som `tabularx`
+loader):
+
+```latex
+% før:  \begin{tabular}{p{2.5cm}p{3.5cm}p{3.7cm}}
+% efter:
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.5cm}%
+                >{\raggedright\arraybackslash}p{3.5cm}%
+                >{\raggedright\arraybackslash}p{3.7cm}}
+% tabularx X-kolonne:  {l >{\raggedright\arraybackslash}X}
+```
+
+Gør ragged-right til house-default for opslags-/oversigtstabeller, og anvend det konsekvent på
+tværs af kapitler *og* appendikser. **Overklaim ikke** bog-dækkende overfull-eliminering:
+ragged-right fikser overløb *inde i de smalle kolonner*, men en bogs resterende overfull `\hbox`es
+sidder typisk i brede figurer/tabeller/matematik andre steder — læs byg-loggen for at se hvor de
+faktisk er, i stedet for at antage at tabel-passet nulstillede dem.
 
 ### Byg-kommando
 ```bash

@@ -3,6 +3,18 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [0.5.0] — 2026-07-08
+
+### Added
+- `faglig-bog` (Danish sibling of `academic-book`): **mirrored the two 0.4.0 layout additions into
+  Danish** so the sibling skills do not drift apart. SKILL.md gains a Danish "Tabel-kolonnejustering
+  — foretræk ragged-right" section (same ragged-right rule + the honest note that it fixes in-column
+  overflow but does NOT zero a book's overfull count), and a new `faglig-bog/references/
+  prepress_pdf_checklist.md` (Danish pre-press checklist: trim, ≥300 dpi, font embedding, PDF/X
+  [ISO 15930] / PDF/A [ISO 19005] / PDF/UA [ISO 14289], CMYK, bleed, tagging), with a pointer from
+  Skabelon 9. Principle recorded: language-agnostic learnings (layout, pre-press, build) go into
+  BOTH `academic-book` and `faglig-bog`.
+
 ## [0.4.0] — 2026-07-08
 
 ### Added
