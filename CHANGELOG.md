@@ -3,6 +3,17 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [0.7.1] — 2026-07-10
+
+### Fixed
+- `pm-konsistens-audit` (`audit_all.py`): the Case numbering series now recognises the **English label
+  "Example"** (previously only Danish `Case`/`Eksempel` were mapped). Books that use one shared casebox
+  series with mixed "Case X.Y" and "Example X.Y" titles were false-flagged as having numbering gaps —
+  e.g. a chapter with Example 5.1 + Case 5.2–5.4 was read as Case [2,3,4] and reported as "missing 1".
+  Added `'Example'` to `LABELMAP` and to the Case cross-reference pattern. Verified on the live EN
+  textbook: **4 false-positive numbering flags → 0** (audit now fully clean). No manuscript change — the
+  book's numbering was already correct; renumbering would have broken the valid sequence.
+
 ## [0.7.0] — 2026-07-10
 
 ### Added
