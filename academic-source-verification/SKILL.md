@@ -41,7 +41,8 @@ Skillen har to sideordnede formål — verifikationen OG dokumentationen af den:
 - **`pm-konsistens-audit`** (søster) — *intern* sandhed: hænger bogen sammen med sig
   selv? Fortløbende numre, dangling krydsref, at hver in-text-citation *resolver* til en
   bib-nøgle (fantom-/forældreløs-detektion), at gengivelser i tabeller matcher
-  `references.bib`. Offline, deterministisk. **Fantom-/forældreløs-fund derfra FODRER
+  `references.bib` (implementeret i `pm-konsistens-audit/scripts/audit_all.py --bib`, sektion 3;
+  fanger nu også dublet-poster og nøglenavn↔år-mismatch). Offline, deterministisk. **Fantom-/forældreløs-fund derfra FODRER
   denne skill** (kun faktisk citerede, resolvbare kilder verificeres eksternt).
 - **`academic-source-verification`** (denne) — *ekstern* sandhed + deklaration: findes
   kilden i verden, er den rigtig, pålidelig, og siger den det påståede. Kræver web/DB/

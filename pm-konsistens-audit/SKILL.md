@@ -7,7 +7,10 @@ description: >-
   Definition/Teoriboks/Perspektivboks/Case/Eksempel/Figur/Tabel; dangling
   krydshenvisninger (afsnit/Boks/Case/Figur/Tabel X.Y); at konceptregister og
   teorioversigt (Appendix) peger på RETTE afsnit/definitioner/bokse/floats; og at
-  citationer i oversigtstabeller matcher references.bib. Triggere: "kategori-audit",
+  citationer i oversigtstabeller matcher references.bib; samt REFERENCE-INTEGRITET: prosa-
+  citationer (forfatter-år) der mangler en references.bib-nøgle, dublet-poster (samme DOI/titel),
+  orphan-nøgler, og nøglenavn↔år-felt-mismatch. Triggere: "kategori-audit", "reference-integritet",
+  "prosa citation uden nøgle", "dublet reference", "bib-audit",
   "fortløbende numre", "tjek henvisninger", "konceptregister konsistens", "Appendix B
   konsistens", "peger figur/tabel-referencer rigtigt", "dangling references".
   OPT-IN. Flagger og foreslår — ændrer aldrig mening/tal/citater uden eksplicit OK;
@@ -53,6 +56,8 @@ audit (og derefter typografi + build) igen.
    - Dangling hårdkodede henvisninger (kategori X.Y der ikke findes).
    - Konceptregister: §→afsnitstitel, Def→definitionstitel, Box→boks-titel,
      Fig/Tabel→float (via aux+caption). Flagger navn↔nummer-mismatch.
+   - **Reference-integritet (sektion 3, kræver --bib):** prosa-citationer krydstjekket mod
+     references.bib-nøgler. Se dedikeret afsnit nedenfor.
 3. **Verificér semantik manuelt** for hvert flag (skillen foreslår, beslutter ikke).
    Byg begreb→afsnitstitel-kort fra `\section`-titler; sammenlign mod henvisningens mål.
 4. **Ret transaktionelt.** For hver rettelse: assertér at ankeret (begreb + gammelt
@@ -62,10 +67,51 @@ audit (og derefter typografi + build) igen.
 5. **Genbyg og verificér i PDF** (pdftotext): nye værdier til stede, gamle værdier =
    0 forekomster, ingen fantom-referencer.
 
+## Reference-integritet (prosa ↔ references.bib)
+
+Gælder bøger med **tekstuelle** referencer (forfatter-år skrevet i prosaen) + `\nocite{*}`
+— IKKE `\cite`. Her kan en numre-/float-audit pr. konstruktion ikke fange en citation der
+peger på en **ikke-eksisterende** bib-nøgle. `audit_all.py --bib references.bib` tilføjer
+**sektion 3** med fire kategorier:
+
+| Kat. | Fund | Sikkerhed |
+|---|---|---|
+| **C** | Dublet-poster (samme DOI, eller samme titel + samme år) | HØJ — hardt flag |
+| **D** | Nøglenavn-år ≠ `year`-felt | HØJ — hardt flag |
+| **A** | Prosa-citation uden matchende nøgle (delt: "efternavn slet ikke i bib" = høj signal; "år-mismatch" = ofte co-forf.-støj) | LAV/BLANDET — review |
+| **B** | Bib-nøgle uden citation i prosa (orphan) | LAV — review |
+
+Kun **C+D tæller som harde flag** (deterministiske). A og B er iboende støjende
+(co-forfattere, virksomheds-/magasinnavne, genitiver, diakritik) og listes som
+review-kandidater der IKKE fælder "RENT ✓". Scriptet deaccenter prosaen (ö→o, é→e) og
+fjerner genitiv-'s før navne-udtræk for at dæmpe falske positiver — men A-listen kræver
+altid menneskelig filtrering.
+
+### Prioritering af fund (triage)
+- **P1 — læser-synlige fejl (ret først):** C-dubletter (dobbelt-trykt i litteraturlisten);
+  prosa/år-uoverensstemmelser hvor `year`-feltet er korrekt (prosaen viser forkert år);
+  A-"efternavn slet ikke i bib" for et reelt citeret værk (uslåbar reference).
+- **P2 — integritet, usynlig men forkert:** forkert DOI på en post; `year`-felt forkert.
+- **P3 — kosmetisk:** nøglenavn≠`year`-felt hvor feltet ER korrekt (usynligt i output for
+  tekstuelle refs); orphan-nøgler (harmløse — `\nocite{*}` trykker dem alligevel).
+
+### Forbehold (samme "flag, ret ikke")
+Opret aldrig en reference med opdigtet DOI/sider — verificér metadata (CrossRef/Scite/Exa/
+bibliotek); bøger uden DOI angives med forlag/sted/år. Vælg den udgave hvis årstal matcher
+prosaen (fx et bogkapitel frem for et working paper med andet år). Ret transaktionelt:
+backup → assertion pr. forekomst → byte-diff → build → log.
+
+Reference-integritet læser kun `.bib` + `.tex` (ingen `main.aux`/build nødvendig), så den
+kan køres tidligt — også før den fulde numre-/float-audit.
+
+---
+
 ## Rør-ikke / beskyttet
 Citater, citationer/forfattere/år/DOI, definerede term-navne, boks-ordlyd, tal.
 Ret aldrig en citation uden eksplicit brugerbeslutning (flag som "beskyttet").
 
 ## Filer
-- `scripts/audit_all.py` — deterministisk auditor (parametre: --src-glob, --register,
-  --appendix, --aux). Skriver markdown-rapport.
+- `scripts/audit_all.py` — deterministisk, læs-kun auditor. Parametre: `--src` (glob, default
+  `kap*_body.tex`), `--aux` (default `main.aux`; springes over hvis fraværende), `--bib` (default
+  `references.bib`; aktiverer sektion 3 reference-integritet), `--out` (markdown-rapport).
+  Eksempel: `python3 scripts/audit_all.py --src "kap*_body.tex" --aux main.aux --bib references.bib --out KATEGORI_AUDIT.md`

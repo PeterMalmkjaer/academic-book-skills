@@ -3,6 +3,31 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [0.6.0] — 2026-07-10
+
+### Added
+- `pm-konsistens-audit`: **reference-integritets-tjek (prosa ↔ references.bib)** — implementerer
+  det hidtil dokumenterede-men-manglende "fantom-/forældreløs"-kontraktpunkt som
+  `academic-source-verification` allerede henviste til. `scripts/audit_all.py` får en `--bib`-parameter
+  og en ny **sektion 3** med fire kategorier: **A** prosa-citation uden matchende bib-nøgle (delt i
+  "efternavn slet ikke i bib" = høj signal vs. "år-mismatch" = co-forf.-støj), **B** orphan-nøgler,
+  **C** dublet-poster (samme DOI, eller samme titel + samme år — forskellige udgaver springes over),
+  **D** nøglenavn-år ≠ `year`-felt. Kun **C+D tæller som harde flag**; A+B er review-kandidater der ikke
+  fælder "RENT ✓". Prosaen deaccentes (ö→o, é→e) + genitiv-'s fjernes før navne-udtræk for at dæmpe
+  falske positiver. Gælder bøger med **tekstuelle** referencer + `\nocite{*}` (ikke `\cite`), hvor en
+  numre-/float-audit pr. konstruktion ikke kan fange en citation der peger på en ikke-eksisterende nøgle.
+  SKILL.md får en "Reference-integritet"-sektion med **P1/P2/P3-triage** (læser-synlige fejl → integritet →
+  kosmetisk) og forbehold. Baggrund: PM-bogen (2026-07) — fandt 12 manglende referencer, 4 dublet-poster
+  og flere skjulte prosa/år-fejl som de øvrige tjek ikke så.
+
+### Fixed
+- `pm-konsistens-audit`: SKILL.md "Filer" listede forkerte parametre (`--register`, `--appendix` findes ikke
+  i `audit_all.py`); rettet til de faktiske: `--src`, `--aux`, `--bib`, `--out`.
+
+### Changed
+- `academic-source-verification`: krydsreference til søster-skillen præciseret — fantom-/forældreløs-detektionen
+  er nu faktisk implementeret (`audit_all.py --bib`, sektion 3) og dækker desuden dublet + nøgle/år.
+
 ## [0.5.0] — 2026-07-08
 
 ### Added
