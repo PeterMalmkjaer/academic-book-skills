@@ -3,6 +3,17 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [0.6.1] — 2026-07-10
+
+### Fixed
+- `academic-source-verification`: **`ledger_build.py`s in-text-scanner var svag** — den fangede kun den
+  parentetiske form `(Forfatter, år)`, ikke den narrative `Forfatter (år)` (den dominerende i
+  tekstuelle-reference-bøger). På PM-bogen betød det 22 fundne citationer og 196 "forældreløse" (falsk).
+  Porteret `pm-konsistens-audit/audit_all.py`s robuste logik: begge citationsformer, deaccent (ö→o, é→e),
+  genitiv-'s-fjernelse, og matchning mod ALLE forfatter-efternavne (ikke kun første). Resultat på PM-bogen:
+  311 citationer, 32 reelle forældreløse. Phantom-detektion opdelt i **"efternavn slet ikke i bib" (høj
+  signal)** vs **"år-mismatch" (co-forf.-støj)** — så de to søster-skills nu er enige om citations-modellen.
+
 ## [0.6.0] — 2026-07-10
 
 ### Added

@@ -23,6 +23,16 @@ Usage:
 """
 import argparse, glob, json, re, csv, sys
 from pathlib import Path
+import unicodedata
+
+def _deacc(x):
+    return unicodedata.normalize('NFKD', x).encode('ascii','ignore').decode()
+
+def _norm_sur(x):
+    return re.sub(r'[^a-zA-Z]','', _deacc(x)).lower()
+
+_NOISE = {'og','al','et','se','jf','kap','the','of','ceo','general','electric','today',
+          'accounting','forordning','microsoft','netflix','gallup','workhuman','textio','ge','and'}
 
 PROV_COLS = ["verifikationsmetoder", "antal_kilder", "kilde_evidens", "annotation_ref",
              "retraktionsstatus", "claim_støttet", "in_text_match",
@@ -46,8 +56,17 @@ def parse_bib(path):
         def field(name):
             fm = re.search(name + r"\s*=\s*[{\"]([^}\"]*)", body, re.I)
             return fm.group(1).strip() if fm else ""
-        entries[key] = {"author": field("author"), "year": field("year"),
-                        "journal": field("journal") or field("journaltitle") or field("title")}
+        au = field("author") or field("editor")
+        surs = []
+        for a in re.split(r"\s+and\s+", au):
+            a=a.strip()
+            if not a: continue
+            sur = a.split(",")[0] if "," in a else (a.split()[-1] if a.split() else a)
+            ns=_norm_sur(sur)
+            if ns: surs.append(ns)
+        entries[key] = {"author": au, "year": field("year"),
+                        "journal": field("journal") or field("journaltitle") or field("title"),
+                        "surs": surs}
     return entries
 
 def surname(author):
@@ -56,15 +75,29 @@ def surname(author):
     return (first.split(",")[0] if "," in first else first.split()[-1]).strip()
 
 def scan_intext(globs):
-    cites = []  # (surname_token, year, file)
-    pat = re.compile(r"\(([A-Z][A-Za-zÀ-ÿ'`\-]+)(?:\s+(?:et al\.?|and|&)\s+[A-Z][A-Za-zÀ-ÿ'`\-]+)*,?\s+(\d{4})[a-z]?\)")
+    """Robust: fanger BÅDE narrativ form 'Forfatter (år)' OG parentetisk '(Forfatter, år)'.
+    Deaccenter (ö->o, é->e) + fjerner genitiv-'s. Returnerer (norm_surname, year)-par."""
+    pairs = set()   # (norm_surname, year)
+    NAME = r"[A-Z][A-Za-z'\-]+"
     for g in globs:
         for fp in glob.glob(g, recursive=True):
             try: t = Path(fp).read_text(encoding="utf-8", errors="replace")
             except Exception: continue
-            for m in pat.finditer(t):
-                cites.append((m.group(1), m.group(2), fp))
-    return cites
+            t = re.sub(r"(?<!\\)%.*", "", t)      # fjern LaTeX-kommentarer
+            t = _deacc(t)
+            t = re.sub(r"'s\b", "", t)             # genitiv
+            for m in re.finditer(r"("+NAME+r"(?:\s+(?:og|and|&|et\s+al\.?|,)\s*[A-Z]?[A-Za-z'\-]*)*)\s*\((\d{4})[a-z]?\)", t):
+                yr=m.group(2)
+                for n in re.findall(NAME, m.group(1)):
+                    ns=_norm_sur(n)
+                    if ns and ns not in _NOISE and len(ns)>1: pairs.add((ns,yr))
+            for m in re.finditer(r"\(([^()]*?\b\d{4}[a-z]?)\)", t):
+                inner=m.group(1); yrs=re.findall(r"(\d{4})", inner)
+                for n in re.findall(NAME, inner):
+                    ns=_norm_sur(n)
+                    if ns in _NOISE or not ns or len(ns)<3: continue
+                    for yr in yrs: pairs.add((ns,yr))
+    return pairs
 
 def main():
     ap = argparse.ArgumentParser()
@@ -74,17 +107,27 @@ def main():
     a = ap.parse_args()
 
     bib = parse_bib(a.bib)
-    cites = scan_intext(a.tex)
+    prose = scan_intext(a.tex)        # sæt af (norm_surname, year)
 
-    bib_surnames = {k: surname(v["author"]).lower() for k, v in bib.items()}
-    bib_years = {k: v["year"] for k, v in bib.items()}
+    # opslag (surname,year) -> nøgler (via ALLE forfatter-efternavne)
+    sy = {}
+    for k, v in bib.items():
+        for ns in v.get("surs", []):
+            if v["year"]: sy.setdefault((ns, v["year"]), []).append(k)
 
-    def matches(sname, yr):
-        return [k for k in bib if bib_surnames.get(k) == sname.lower() and bib_years.get(k) == yr]
+    def matches(ns, yr):
+        return sy.get((ns, yr)) or sy.get((ns.rstrip("s"), yr)) or []
 
-    phantoms = sorted({(s, y) for (s, y, _) in cites if not matches(s, y)})
-    cited_keys = {k for (s, y, _) in cites for k in matches(s, y)}
+    all_surs = {ns for v in bib.values() for ns in v.get("surs", [])}
+    cited_keys = {k for (ns, yr) in prose for k in matches(ns, yr)}
+    # split phantoms: efternavn HELT fraværende (høj signal) vs år-mismatch (ofte co-forf.-støj)
+    phantom_absent = sorted({(ns, yr) for (ns, yr) in prose
+                             if not matches(ns, yr) and ns not in all_surs and ns.rstrip("s") not in all_surs})
+    phantom_yrmis  = sorted({(ns, yr) for (ns, yr) in prose
+                             if not matches(ns, yr) and (ns in all_surs or ns.rstrip("s") in all_surs)})
+    phantoms = phantom_absent  # "ægte" phantom = uslåbar
     orphans = sorted(set(bib) - cited_keys)
+    cites = prose  # for tælle-udskrift
 
     rows = []
     for k, v in sorted(bib.items()):
@@ -95,7 +138,9 @@ def main():
 
     out = Path(a.out)
     with open(out.with_suffix(".json"), "w", encoding="utf-8") as f:
-        json.dump({"rows": rows, "phantoms": [f"{s} {y}" for s, y in phantoms],
+        json.dump({"rows": rows,
+                   "phantoms_absent": [f"{s} {y}" for s, y in phantom_absent],
+                   "phantoms_yearmismatch": [f"{s} {y}" for s, y in phantom_yrmis],
                    "orphans": orphans}, f, ensure_ascii=False, indent=2)
     with open(out.with_suffix(".csv"), "w", encoding="utf-8", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
@@ -103,7 +148,8 @@ def main():
 
     print(f"bib entries      : {len(bib)}")
     print(f"in-text cites    : {len(cites)}")
-    print(f"PHANTOM cites    : {len(phantoms)}  (in text, no bib entry)  -> {phantoms[:8]}")
+    print(f"PHANTOM (absent) : {len(phantom_absent)}  (efternavn slet ikke i bib — HØJ signal)  -> {phantom_absent[:8]}")
+    print(f"PHANTOM (år-mism): {len(phantom_yrmis)}  (efternavn findes, andet år — ofte co-forf.-støj)")
     print(f"ORPHAN entries   : {len(orphans)}  (bib, never cited)       -> {orphans[:8]}")
     print(f"ledger skeleton  : {out.with_suffix('.json')} / {out.with_suffix('.csv')}")
     print("NOTE: external verification (existence/metadata/retraction/claim) is the human+backends step.")
