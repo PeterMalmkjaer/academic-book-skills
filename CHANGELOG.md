@@ -3,6 +3,19 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [0.7.0] — 2026-07-10
+
+### Added
+- `pm-konsistens-audit`: **kapitel-skabelon-konsistens-tjek (sektion 4)** i `audit_all.py`. Udleder den
+  MODALE åbningsstruktur fra flertallet af kapitler (`\chapter` → `\chaprule` → epigraf → "Hvad dette
+  kapitel handler om"-boks → læringsmål → første `\section`) og **flager kapitler der bryder rækkefølgen**
+  (relativ rækkefølge, ikke linjenumre → epigraf-eller-ej giver ikke falske positiver), **manglende
+  påkrævede landemærker** (H/L påkrævet hvis ≥50 % har dem), og **afvigende læringsmål-indledning**
+  (modal frase udledes; review). Harde flag = rækkefølge + manglende. Baggrund: PM-bogen — en læser fandt
+  at kap16/17 åbnede med læringsmål FØR "Hvad dette kapitel handler om" (de 15 øvrige omvendt) + brugte en
+  anden indlednings-frase; sektion 4 reproducerer begge fund deterministisk (bevist mod før/efter-versioner).
+  Numre-/reference-tjek ser ikke denne fejlklasse.
+
 ## [0.6.1] — 2026-07-10
 
 ### Fixed

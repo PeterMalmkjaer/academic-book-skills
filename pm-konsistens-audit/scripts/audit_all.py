@@ -214,6 +214,63 @@ def check_bib_integrity(src, bib_path, out):
     return hard
 
 
+def check_chapter_skeleton(src, out):
+    """Sektion 4: kapitel-skabelon-konsistens. Udleder den MODALE aabningsstruktur fra
+    flertallet af kapitler og flager afvigere. Fanger fx 'laeringsmaal foer handler-om-boks'
+    og manglende paakraevede landemaerker. HARDE flag = raekkefoelge-afvigelser + manglende
+    paakraevede landemaerker (H/L). Frase-afvigelser (laeringsmaal-indledning) = review.
+    Laes kun .tex (ingen build noedvendig)."""
+    import collections
+    out.append("## 4. Kapitel-skabelon-konsistens (aabningsstruktur)\n")
+    ch_data={}
+    for fpath,(ch,txt) in src.items():
+        msec=re.search(r'\\section\*?\{', txt)
+        opening = txt[:msec.start()] if msec else txt
+        def pos(pat, hay=opening):
+            m=re.search(pat, hay); return m.start() if m else None
+        intro=None
+        ml=re.search(r'\\begin\{learninggoals\}\s*\n\s*(.+)', txt)
+        if ml: intro=ml.group(1).strip()
+        ch_data[ch]=dict(f=fpath,
+                         H=pos(r'Hvad dette kapitel handler om'),
+                         L=pos(r'\\begin\{learninggoals\}'),
+                         R=pos(r'\\chaprule'),
+                         intro=intro, has_sec=bool(msec))
+    # relativ raekkefoelge H vs L
+    order={ch:('H<L' if d['H']<d['L'] else 'L<H')
+           for ch,d in ch_data.items() if d['H'] is not None and d['L'] is not None}
+    modal_order = collections.Counter(order.values()).most_common(1)[0][0] if order else None
+    bad_order = sorted(ch for ch,o in order.items() if o!=modal_order)
+    # tilstedevaerelse: H/L paakraevet hvis >=50% af kapitler har dem
+    n=len(ch_data) or 1
+    req_H = sum(1 for d in ch_data.values() if d['H'] is not None) >= n/2
+    req_L = sum(1 for d in ch_data.values() if d['L'] is not None) >= n/2
+    miss=[]
+    for ch,d in sorted(ch_data.items()):
+        if req_H and d['H'] is None: miss.append(f"  - kap{ch}: mangler 'Hvad dette kapitel handler om'-boks ({d['f']})")
+        if req_L and d['L'] is None: miss.append(f"  - kap{ch}: mangler laeringsmaal-boks ({d['f']})")
+    # frase-konsistens (laeringsmaal-indledning)
+    intros=collections.Counter(d['intro'] for d in ch_data.values() if d['intro'])
+    modal_intro = intros.most_common(1)[0][0] if intros else None
+    phrase=[f"  - kap{ch}: {d['intro']!r}" for ch,d in sorted(ch_data.items())
+            if d['intro'] and d['intro']!=modal_intro]
+
+    hard=len(bad_order)+len(miss)
+    out.append(f"### Modal aabningsraekkefoelge: {modal_order or '?'}  (H='Hvad dette kapitel handler om', L=laeringsmaal)")
+    out.append(f"### Afvigende raekkefoelge [HARDT FLAG]: {len(bad_order)}")
+    if bad_order:
+        for ch in bad_order:
+            out.append(f"  - kap{ch}: {order[ch]} (afviger fra modal {modal_order}) — {ch_data[ch]['f']}")
+    else: out.append("  - (ingen)")
+    out.append(f"### Manglende paakraevede landemaerker [HARDT FLAG]: {len(miss)}")
+    out.append("\n".join(miss) if miss else "  - (ingen)")
+    out.append("### Laeringsmaal-indledning — afvigende frase [REVIEW]:")
+    out.append(f"  modal: {modal_intro!r}")
+    out.append("\n".join(phrase) if phrase else "  - (ingen afvigelser)")
+    out.append(f"\n- Kapitel-skabelon: **{hard} hardt flag** (raekkefoelge+manglende); {len(phrase)} frase-afvigelser til review.\n")
+    return hard
+
+
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument('--src',default='kap*_body.tex')
@@ -233,8 +290,9 @@ def main():
     p2=check_refs(src,titles,figset,tabset,out)
     p3=check_bib_integrity(src,a.bib,out) if os.path.exists(a.bib) else 0
     if not os.path.exists(a.bib): out.append("## 3. Reference-integritet\n- (--bib ikke fundet; sprunget over)\n")
-    total=p1+p2+p3
-    out.append(f"\n## Konklusion\n{'RENT ✓ — 0 afvigelser.' if total==0 else f'{total} punkter til gennemgang (numre/henvisninger: '+str(p1+p2)+', reference-integritet hardt: '+str(p3)+').'}")
+    p4=check_chapter_skeleton(src,out)
+    total=p1+p2+p3+p4
+    out.append(f"\n## Konklusion\n{'RENT ✓ — 0 afvigelser.' if total==0 else f'{total} punkter til gennemgang (numre/henvisninger: '+str(p1+p2)+', reference-integritet: '+str(p3)+', kapitel-skabelon: '+str(p4)+').'}")
     open(a.out,'w',encoding='utf-8').write("\n".join(out))
     print(f"Rapport skrevet: {a.out}  ({total} flag)")
 

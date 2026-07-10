@@ -58,6 +58,8 @@ audit (og derefter typografi + build) igen.
      Fig/Tabel→float (via aux+caption). Flagger navn↔nummer-mismatch.
    - **Reference-integritet (sektion 3, kræver --bib):** prosa-citationer krydstjekket mod
      references.bib-nøgler. Se dedikeret afsnit nedenfor.
+   - **Kapitel-skabelon-konsistens (sektion 4):** udleder den modale åbningsstruktur og flager
+     kapitler der bryder den (fx læringsmål før 'Hvad dette kapitel handler om'). Se afsnit nedenfor.
 3. **Verificér semantik manuelt** for hvert flag (skillen foreslår, beslutter ikke).
    Byg begreb→afsnitstitel-kort fra `\section`-titler; sammenlign mod henvisningens mål.
 4. **Ret transaktionelt.** For hver rettelse: assertér at ankeret (begreb + gammelt
@@ -106,6 +108,29 @@ kan køres tidligt — også før den fulde numre-/float-audit.
 
 ---
 
+## Kapitel-skabelon-konsistens (åbningsstruktur)
+
+En lærebog har typisk et fast **kapitel-skelet**: `\chapter` → undertitel → `\chaprule` →
+(epigraf) → **"Hvad dette kapitel handler om"-boks** → **læringsmål** → første `\section`.
+Numre-/reference-tjek ser IKKE om et kapitel bryder dette mønster — derfor kan en afvigelse
+(fx læringsmål FØR handler-om-boksen) nå læseren. `audit_all.py` **sektion 4** fanger det:
+
+- **Udleder den MODALE rækkefølge** af landemærkerne fra flertallet af kapitler (fx H før L,
+  hvor H = "Hvad dette kapitel handler om", L = læringsmål) og **flager afvigere** (relativ
+  rækkefølge, ikke eksakte linjenumre → epigraf-eller-ej giver ikke falske positiver).
+- **Tilstedeværelse:** H og L behandles som påkrævet hvis ≥50 % af kapitlerne har dem; flager
+  kapitler der mangler et påkrævet landemærke.
+- **Frase-konsistens (review):** læringsmål-indledningen (fx "Efter at have læst dette kapitel
+  vil du kunne:") — modal frase udledes; afvigere listes (fanger fx "Efter dette kapitel kan du:").
+
+Harde flag = rækkefølge-afvigelser + manglende påkrævede landemærker. Frase-afvigelser = review.
+Baggrund: PM-bogen (2026-07) — en læser fandt at kap16/17 åbnede med læringsmål før handler-om-
+boksen; de øvrige 15 kapitler havde omvendt. Sektion 4 reproducerer det fund deterministisk.
+
+Kan udvides til kapitel-*slutningen* (opsummering, spørgsmål, videre læsning) efter samme princip.
+
+---
+
 ## Rør-ikke / beskyttet
 Citater, citationer/forfattere/år/DOI, definerede term-navne, boks-ordlyd, tal.
 Ret aldrig en citation uden eksplicit brugerbeslutning (flag som "beskyttet").
@@ -114,4 +139,5 @@ Ret aldrig en citation uden eksplicit brugerbeslutning (flag som "beskyttet").
 - `scripts/audit_all.py` — deterministisk, læs-kun auditor. Parametre: `--src` (glob, default
   `kap*_body.tex`), `--aux` (default `main.aux`; springes over hvis fraværende), `--bib` (default
   `references.bib`; aktiverer sektion 3 reference-integritet), `--out` (markdown-rapport).
+  Sektion 4 (kapitel-skabelon-konsistens) kører altid — kræver kun `.tex`.
   Eksempel: `python3 scripts/audit_all.py --src "kap*_body.tex" --aux main.aux --bib references.bib --out KATEGORI_AUDIT.md`
