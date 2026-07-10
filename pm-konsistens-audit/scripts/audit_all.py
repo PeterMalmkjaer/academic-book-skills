@@ -20,9 +20,10 @@ def load_sources(pat):
     return src
 
 BOX = re.compile(r'\\begin\{(definitionbox|casebox|theorybox|perspectivebox|psychbox|socbox)\}'
-                 r'\[\{?([A-Za-zæøåÆØÅ]+)\s+(\d+)\.(\d+):?\s*(.*?)\}?\]')
+                 r'\[\{?([A-Za-zæøåÆØÅ]+(?:\s+[A-Za-zæøåÆØÅ]+)?)\s+(\d+)\.(\d+):?\s*(.*?)\}?\]')
 LABELMAP = {'Definition':'Definition','Teoriboks':'Teoriboks','Perspektivboks':'Perspektivboks',
-            'Case':'Case/Eksempel','Eksempel':'Case/Eksempel','Example':'Case/Eksempel'}
+            'Case':'Case/Eksempel','Eksempel':'Case/Eksempel','Example':'Case/Eksempel',
+            'Theory Box':'Teoriboks','Perspective Box':'Perspektivboks'}
 
 def parse_boxes(src):
     nums=collections.defaultdict(lambda: collections.defaultdict(list))   # ch->cat->[minor]
@@ -75,8 +76,8 @@ def check_refs(src, boxtitles, figset, tabset, out):
             elif c=='Teoriboks': pool['Teoriboks'].add(n)
             elif c=='Perspektivboks': pool['Perspektivboks'].add(n)
             elif c=='Case/Eksempel': pool['Case'].add(n)
-    pat={'Definition':r'Definition (\d+\.\d+)','Teoriboks':r'Teoriboks (\d+\.\d+)',
-         'Perspektivboks':r'Perspektivboks (\d+\.\d+)','Case':r'(?:Case|Example|Eksempel) (\d+\.\d+)',
+    pat={'Definition':r'Definition (\d+\.\d+)','Teoriboks':r'(?:Teoriboks|Theory Box) (\d+\.\d+)',
+         'Perspektivboks':r'(?:Perspektivboks|Perspective Box) (\d+\.\d+)','Case':r'(?:Case|Example|Eksempel) (\d+\.\d+)',
          'Figur':r'Figur (\d+\.\d+)','Tabel':r'Tabel (\d+\.\d+)'}
     out.append("## 2. Reference-korrekthed (hårdkodede henvisninger)\n")
     dangling=0

@@ -3,6 +3,19 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [0.7.2] — 2026-07-10
+
+### Fixed
+- `pm-konsistens-audit` (`audit_all.py`): the numbering audit now covers **two-word box labels** —
+  "Theory Box X.Y" and "Perspective Box X.Y". The box regex previously captured only a single word
+  before the number, so English two-word labels were read as "Box", mapped to nothing, and the Theory
+  Box and Perspective Box series were silently NOT validated (only Definition and Case/Example were).
+  Widened the label capture to an optional second word and mapped `'Theory Box'→Teoriboks`,
+  `'Perspective Box'→Perspektivboks` (plus their cross-reference patterns). Verified on the live EN
+  textbook: all six categories (Definition, Theory Box, Perspective Box, Case/Example, Figure, Table)
+  are now validated and consecutive; audit clean. Independent manual check confirmed both series run
+  1..n in every chapter.
+
 ## [0.7.1] — 2026-07-10
 
 ### Fixed
