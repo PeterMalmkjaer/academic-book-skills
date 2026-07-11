@@ -3,6 +3,26 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [0.7.4] — 2026-07-11
+
+### Added
+- `pm-konsistens-audit` (`audit_all.py`): new **section 5 — typeless box-pointers**. Flags any bare
+  `Box N.N` (an anglicism; Danish labels are `Teoriboks`/`Perspektivboks`) and **escalates to a HARD
+  FLAG** when `N.N` is ambiguous — i.e. exists as *both* a Teoriboks and a Perspektivboks (the book uses
+  separate counters per box type per chapter, so collision numbers are genuinely ambiguous to the reader).
+  Other typeless pointers are listed as REVIEW. The type-map is derived from the *actual* box titles in
+  the source (never from a handover/table — numbers drift). `Theory Box`/`Perspective Box` (English typed
+  forms) are excluded via lookbehind.
+- `audit_all.py`: wired in real `--register` (default `konceptregister_body.tex`) and `--appendix`
+  (default `09_Back_Matter/appendiks_b_teorioversigt.tex`) arguments so the concept register/appendix are
+  actually scanned. Previously the usage example referenced these flags but `main()` never defined them,
+  so the register was only audited if manually folded into `--src`.
+
+### Rationale
+- Surfaced by the PM-bog concept register: 52 bare `Box N.N` pointers, of which 14 register lines
+  (13 collision numbers, 16.1 twice) were truly ambiguous. Fixed manually 2026-07-11; regression test
+  confirms section 5 catches the pre-fix state (14 hard flags) and reports the post-fix master clean.
+
 ## [0.7.3] — 2026-07-11
 
 ### Documented

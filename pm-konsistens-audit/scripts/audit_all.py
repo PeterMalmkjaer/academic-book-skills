@@ -31,6 +31,11 @@ LABELMAP = {'Definition':'Definition','Teoriboks':'Teoriboks','Perspektivboks':'
             'Case':'Case/Eksempel','Eksempel':'Case/Eksempel','Example':'Case/Eksempel',
             'Theory Box':'Teoriboks','Perspective Box':'Perspektivboks'}
 
+# Typeløs box-pointer: standalone "Box N.N" (anglicisme + ikke type-kvalificeret).
+# Danske typede labels er "Teoriboks"/"Perspektivboks" (lille b, ingen mellemrum) og rammes IKKE.
+# De engelske typede former "Theory Box"/"Perspective Box" udelukkes via lookbehind.
+BARE_BOX = re.compile(r'(?<![A-Za-zæøåÆØÅ])(?<!Theory )(?<!Perspective )Box\s+(\d+\.\d+)')
+
 def parse_boxes(src):
     nums=collections.defaultdict(lambda: collections.defaultdict(list))   # ch->cat->[minor]
     titles=collections.defaultdict(list)                                  # "X.Y"->[titel]
@@ -278,12 +283,50 @@ def check_chapter_skeleton(src, out):
     return hard
 
 
+def check_bare_pointers(src, extra_files, out):
+    """Sektion 5: typeløse box-pointere. En bar 'Box N.N' (uden Teoriboks/Perspektivboks-
+    præfiks) er dels en anglicisme, dels TVETYDIG når N.N findes som både Teoriboks og
+    Perspektivboks (separate tællere pr. type pr. kapitel → kollisionsnumre). HARDE flag =
+    tvetydige (kollisions-)numre; øvrige typeløse = review. Scanner kilde + register + appendiks.
+    Læs kun .tex (ingen build nødvendig)."""
+    theory=set(); persp=set()
+    for f,(ch,txt) in src.items():
+        for m in BOX.finditer(txt):
+            c=LABELMAP.get(m.group(2)); n=f"{m.group(3)}.{m.group(4)}"
+            if c=='Teoriboks': theory.add(n)
+            elif c=='Perspektivboks': persp.add(n)
+    coll=theory&persp
+    files=dict(src)
+    for ef in extra_files:
+        try: files[ef]=(0, open(ef, encoding='utf-8').read())
+        except OSError: pass
+    out.append("## 5. Typeløse box-pointere (anglicisme + tvetydighed)\n")
+    hard=0; soft=0
+    for f,(ch,txt) in files.items():
+        for i,line in enumerate(txt.splitlines(),1):
+            if '\\begin{' in line: continue
+            for m in BARE_BOX.finditer(line):
+                n=m.group(1)
+                if n in coll:
+                    hard+=1
+                    out.append(f"- ⚠⚠ {f}:{i} bar 'Box {n}' er TVETYDIG — findes som BÅDE Teoriboks {n} og Perspektivboks {n} [HARDT FLAG]")
+                else:
+                    typ = 'Teoriboks' if n in theory else ('Perspektivboks' if n in persp else '?ukendt')
+                    soft+=1
+                    out.append(f"- ⚠ {f}:{i} bar 'Box {n}' bør typekvalificeres (→ {typ} {n}) [REVIEW]")
+    out.append((f"- 0 typeløse box-pointere ✓" if (hard+soft)==0
+                else f"- **{hard} tvetydige (hardt flag)** + {soft} typeløse til review")+"\n")
+    return hard
+
+
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument('--src',default='kap*_body.tex')
     ap.add_argument('--aux',default='main.aux')
     ap.add_argument('--out',default='KATEGORI_AUDIT.md')
     ap.add_argument('--bib',default='references.bib',help='references.bib til reference-integritet (sektion 3)')
+    ap.add_argument('--register',default='konceptregister_body.tex',help='konceptregister til typeløs-box-tjek (sektion 5)')
+    ap.add_argument('--appendix',default='09_Back_Matter/appendiks_b_teorioversigt.tex',help='appendiks til typeløs-box-tjek (sektion 5)')
     a=ap.parse_args()
     src=load_sources(a.src)
     if not src: print("Ingen kildefiler matchede",a.src); sys.exit(1)
@@ -298,8 +341,10 @@ def main():
     p3=check_bib_integrity(src,a.bib,out) if os.path.exists(a.bib) else 0
     if not os.path.exists(a.bib): out.append("## 3. Reference-integritet\n- (--bib ikke fundet; sprunget over)\n")
     p4=check_chapter_skeleton(src,out)
-    total=p1+p2+p3+p4
-    out.append(f"\n## Konklusion\n{'RENT ✓ — 0 afvigelser.' if total==0 else f'{total} punkter til gennemgang (numre/henvisninger: '+str(p1+p2)+', reference-integritet: '+str(p3)+', kapitel-skabelon: '+str(p4)+').'}")
+    extra=[f for f in (a.register,a.appendix) if f and os.path.exists(f)]
+    p5=check_bare_pointers(src,extra,out)
+    total=p1+p2+p3+p4+p5
+    out.append(f"\n## Konklusion\n{'RENT ✓ — 0 afvigelser.' if total==0 else f'{total} punkter til gennemgang (numre/henvisninger: '+str(p1+p2)+', reference-integritet: '+str(p3)+', kapitel-skabelon: '+str(p4)+', typeløse box-pointere: '+str(p5)+').'}")
     open(a.out,'w',encoding='utf-8').write("\n".join(out))
     print(f"Rapport skrevet: {a.out}  ({total} flag)")
 

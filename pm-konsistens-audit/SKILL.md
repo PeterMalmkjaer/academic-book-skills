@@ -60,6 +60,9 @@ audit (og derefter typografi + build) igen.
      references.bib-nøgler. Se dedikeret afsnit nedenfor.
    - **Kapitel-skabelon-konsistens (sektion 4):** udleder den modale åbningsstruktur og flager
      kapitler der bryder den (fx læringsmål før 'Hvad dette kapitel handler om'). Se afsnit nedenfor.
+   - **Typeløse box-pointere (sektion 5):** flager bar `Box N.N` (anglicisme + ikke type-kvalificeret)
+     og eskalerer til HARDT FLAG når N.N er tvetydigt (findes som både Teoriboks og Perspektivboks).
+     Scanner kilde + `--register` + `--appendix`. Se afsnit nedenfor.
 3. **Verificér semantik manuelt** for hvert flag (skillen foreslår, beslutter ikke).
    Byg begreb→afsnitstitel-kort fra `\section`-titler; sammenlign mod henvisningens mål.
 4. **Ret transaktionelt.** For hver rettelse: assertér at ankeret (begreb + gammelt
@@ -131,6 +134,21 @@ Kan udvides til kapitel-*slutningen* (opsummering, spørgsmål, videre læsning)
 
 ---
 
+## Typeløse box-pointere (sektion 5)
+Bogen har **separate tællere pr. bokstype pr. kapitel**, så samme nummer kan være BÅDE en Teoriboks
+og en Perspektivboks (kollisionsnumre). En bar `Box N.N` uden typepræfiks er derfor (a) en **anglicisme**
+— danske labels er `Teoriboks`/`Perspektivboks` — og (b) **tvetydig** når N.N er et kollisionsnummer.
+Sektion 5 scanner kilde + `--register` + `--appendix`, matcher standalone `Box N.N` (de engelske typede
+former `Theory Box`/`Perspective Box` udelukkes), og:
+- **HARDT FLAG:** N.N findes som både Teoriboks og Perspektivboks (reelt tvetydigt for læseren).
+- **REVIEW:** øvrige typeløse `Box N.N` (entydige, men bør stadig type-kvalificeres af house-style-hensyn).
+
+Type-mappen udledes fra de **faktiske** boks-titler i kilden (ikke fra en handover/tabel — numre driver).
+Baggrund: PM-bogens konceptregister havde 52 bare `Box N.N`, hvoraf 14 registerlinjer (13 kollisionsnumre,
+16.1 to gange) var reelt tvetydige. Rettet 2026-07-11; sektion 5 reproducerer fundet deterministisk.
+
+---
+
 ## Rør-ikke / beskyttet
 Citater, citationer/forfattere/år/DOI, definerede term-navne, boks-ordlyd, tal.
 Ret aldrig en citation uden eksplicit brugerbeslutning (flag som "beskyttet").
@@ -138,6 +156,8 @@ Ret aldrig en citation uden eksplicit brugerbeslutning (flag som "beskyttet").
 ## Filer
 - `scripts/audit_all.py` — deterministisk, læs-kun auditor. Parametre: `--src` (glob, default
   `kap*_body.tex`), `--aux` (default `main.aux`; springes over hvis fraværende), `--bib` (default
-  `references.bib`; aktiverer sektion 3 reference-integritet), `--out` (markdown-rapport).
-  Sektion 4 (kapitel-skabelon-konsistens) kører altid — kræver kun `.tex`.
-  Eksempel: `python3 scripts/audit_all.py --src "kap*_body.tex" --aux main.aux --bib references.bib --out KATEGORI_AUDIT.md`
+  `references.bib`; aktiverer sektion 3 reference-integritet), `--register` (default
+  `konceptregister_body.tex`) og `--appendix` (default `09_Back_Matter/appendiks_b_teorioversigt.tex`)
+  til sektion 5 typeløse box-pointere; `--out` (markdown-rapport).
+  Sektion 4 (kapitel-skabelon) + sektion 5 (typeløse box-pointere) kører altid — kræver kun `.tex`.
+  Eksempel: `python3 scripts/audit_all.py --src "kap*_body.tex" --aux main.aux --bib references.bib --register konceptregister_body.tex --appendix 09_Back_Matter/appendiks_b_teorioversigt.tex --out KATEGORI_AUDIT.md`
