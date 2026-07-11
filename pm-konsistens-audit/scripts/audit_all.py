@@ -21,6 +21,12 @@ def load_sources(pat):
 
 BOX = re.compile(r'\\begin\{(definitionbox|casebox|theorybox|perspectivebox|psychbox|socbox)\}'
                  r'\[\{?([A-Za-zæøåÆØÅ]+(?:\s+[A-Za-zæøåÆØÅ]+)?)\s+(\d+)\.(\d+):?\s*(.*?)\}?\]')
+# NOTE on 'Case' vs 'Example'/'Eksempel': these are TWO DELIBERATE labels sharing ONE
+# casebox counter per chapter. Case = a real-world situation; Example/Eksempel = a
+# constructed/hypothetical illustration. The distinction is meaningful and must be kept
+# in the manuscript and register — do NOT merge the labels. For NUMBERING they are one
+# continuous series, so all three map to the single 'Case/Eksempel' category below
+# (e.g. Example 5.1 + Case 5.2–5.4 is a correct [1,2,3,4] sequence, not a gap).
 LABELMAP = {'Definition':'Definition','Teoriboks':'Teoriboks','Perspektivboks':'Perspektivboks',
             'Case':'Case/Eksempel','Eksempel':'Case/Eksempel','Example':'Case/Eksempel',
             'Theory Box':'Teoriboks','Perspective Box':'Perspektivboks'}

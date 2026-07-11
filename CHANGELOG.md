@@ -3,6 +3,17 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [0.7.3] — 2026-07-11
+
+### Documented
+- `pm-konsistens-audit` (`audit_all.py`): added an inline rationale above `LABELMAP` recording WHY
+  `Case`, `Example` and `Eksempel` all map to one `Case/Eksempel` category. **Case = a real-world
+  situation; Example/Eksempel = a constructed/hypothetical illustration** — two deliberate labels that
+  deliberately share one casebox counter per chapter. They must NOT be merged in the manuscript or
+  concept register (the naming carries meaning), but for numbering they are one continuous series. This
+  prevents a future maintainer from "simplifying" the dual labels or the shared-counter mapping. No code
+  behaviour change.
+
 ## [0.7.2] — 2026-07-10
 
 ### Fixed
