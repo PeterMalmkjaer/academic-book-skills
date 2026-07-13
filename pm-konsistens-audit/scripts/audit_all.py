@@ -319,6 +319,43 @@ def check_bare_pointers(src, extra_files, out):
     return hard
 
 
+# Hårdkodede prosa-henvisninger til afsnit/kapitel. Bogen bruger tekstuelle henvisninger
+# ("Section 12.7" / "Afsnit 12.7" / "Chapter 5" / "Kapitel 5"), IKKE \ref — så LaTeX validerer
+# dem ikke, og de kan blive stale ved omnummerering. AI-kapitlerne (kap16–17) har flest, men
+# konventionen er book-wide; sektion 6 holder alle kapitler til samme standard.
+# Case-insensitivt: EN skriver "Section 3.2" (stort S), men DA skriver oftest "afsnit 3.2" /
+# "kapitel 5" med lille bogstav midt i sætning (254× vs 14× i PM-bogen). IGNORECASE fanger begge.
+SEC_REF  = re.compile(r'\b(Section|Sections|Afsnit|Afsnittene)\s+(\d+)\.(\d+)', re.I)
+CHAP_REF = re.compile(r'\b(Chapter|Chapters|Kapitel|Kapitlerne)\s+(\d+)\b', re.I)
+
+def check_section_refs(src, out):
+    """Sektion 6: validér at hvert hårdkodet 'Section/Afsnit X.Y' og 'Chapter/Kapitel N' i prosaen
+    FINDES. Afsnit X.Y kræver at kapitel X har mindst Y nummererede \\section. Dangling = HARDT FLAG.
+    Kun .tex (ingen build). Begrænsning: intervaller ('Sections 7.2--7.3') tjekkes på 1. endepunkt."""
+    secmax={}
+    for f,(ch,txt) in src.items():
+        secmax[ch]=len(re.findall(r'^\\section\{', txt, re.M))
+    maxch=max(secmax) if secmax else 0
+    out.append("## 6. Afsnits-/kapitel-prosa-henvisninger (hårdkodet, ikke \\ref)\n")
+    hard=0; total=0
+    for f,(ch,txt) in src.items():
+        for i,line in enumerate(txt.splitlines(),1):
+            if line.lstrip().startswith('%'): continue
+            for m in SEC_REF.finditer(line):
+                total+=1; c=int(m.group(2)); s=int(m.group(3))
+                if not (c in secmax and 1<=s<=secmax[c]):
+                    hard+=1
+                    out.append(f"- ⚠⚠ {f}:{i} '{m.group(1)} {c}.{s}' → kapitel {c} har {secmax.get(c,0)} afsnit [HARDT FLAG]")
+            for m in CHAP_REF.finditer(line):
+                total+=1; c=int(m.group(2))
+                if not (1<=c<=maxch):
+                    hard+=1
+                    out.append(f"- ⚠⚠ {f}:{i} '{m.group(1)} {c}' → bogen har {maxch} kapitler [HARDT FLAG]")
+    out.append((f"- {total} prosa-henvisninger, alle findes ✓" if hard==0
+                else f"- **{hard} dangling af {total} prosa-henvisninger [HARDT FLAG]**")+"\n")
+    return hard
+
+
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument('--src',default='kap*_body.tex')
@@ -343,8 +380,9 @@ def main():
     p4=check_chapter_skeleton(src,out)
     extra=[f for f in (a.register,a.appendix) if f and os.path.exists(f)]
     p5=check_bare_pointers(src,extra,out)
-    total=p1+p2+p3+p4+p5
-    out.append(f"\n## Konklusion\n{'RENT ✓ — 0 afvigelser.' if total==0 else f'{total} punkter til gennemgang (numre/henvisninger: '+str(p1+p2)+', reference-integritet: '+str(p3)+', kapitel-skabelon: '+str(p4)+', typeløse box-pointere: '+str(p5)+').'}")
+    p6=check_section_refs(src,out)
+    total=p1+p2+p3+p4+p5+p6
+    out.append(f"\n## Konklusion\n{'RENT ✓ — 0 afvigelser.' if total==0 else f'{total} punkter til gennemgang (numre/henvisninger: '+str(p1+p2)+', reference-integritet: '+str(p3)+', kapitel-skabelon: '+str(p4)+', typeløse box-pointere: '+str(p5)+', afsnits-henvisninger: '+str(p6)+').'}")
     open(a.out,'w',encoding='utf-8').write("\n".join(out))
     print(f"Rapport skrevet: {a.out}  ({total} flag)")
 

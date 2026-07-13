@@ -1,6 +1,6 @@
 {
   "name": "pm-konsistens-audit",
-  "version": "0.7.4",
+  "version": "0.8.0",
   "description": "Consistency and reference audit for a LaTeX textbook: consecutive numbering per chapter, dangling cross-references, concept-register/appendix pointers, references.bib integrity and typeless box-pointers.",
   "author": {
     "name": "Peter Malmkjaer"

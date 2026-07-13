@@ -3,6 +3,21 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [0.8.0] — 2026-07-13
+
+### Added
+- `pm-konsistens-audit` (`audit_all.py`): **section 6 — hardcoded section/chapter prose references.**
+  The PM textbook cross-references sections in prose ("Section 12.7" / Danish "afsnit 12.7" /
+  "Chapter 5" / "Kapitel 5") rather than with `\ref`, so LaTeX never validates them and they can go
+  stale silently on renumbering. Section 6 validates that every such reference **exists** (chapter X
+  must have at least Y numbered `\section`s; chapter N must be within the book). Dangling = HARD flag.
+  Case-insensitive so it covers both editions (EN "Section", capitalised; Danish "afsnit"/"kapitel",
+  usually lower-case — 254× vs 14× in the DA book). Verified on the live book: EN **425** and DA **413**
+  prose references, **0 dangling** in both. Motivation: the AI chapters (kap16–17) carry the most such
+  references (161/130), but the convention is book-wide — section 6 holds every chapter to the same
+  standard and catches future breakage automatically. Limitation: ranges ("Sections 7.2--7.3") are
+  checked on the first endpoint only.
+
 ## [0.7.5] — 2026-07-13
 
 ### Packaging
