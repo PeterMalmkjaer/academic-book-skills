@@ -4,8 +4,7 @@
     "name": "Peter Malmkjaer"
   },
   "metadata": {
-    "description": "Book-production skills for writing, structuring and typesetting academic textbooks and monographs in LaTeX — the form/production side of a book project.",
-    "homepage": "https://github.com/PeterMalmkjaer/academic-book-skills"
+    "description": "Book-production skills for writing, structuring and typesetting academic textbooks and monographs in LaTeX — the form/production side of a book project."
   },
   "plugins": [
     {
