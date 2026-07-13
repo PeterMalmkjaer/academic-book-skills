@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use these skills, please cite them as below."
+title: "academic-book-skills"
+abstract: >-
+  Book-production skills for writing, structuring and typesetting academic textbooks and
+  monographs in LaTeX — chapter structure and box/case numbering, a numbering/cross-reference
+  consistency audit, source & citation verification with a reproducible audit ledger, and
+  front/back-matter, cover and print-quality support.
+type: software
+version: 0.7.5
+date-released: 2026-07-13
+license: MIT
+authors:
+  - family-names: "Malmkjær"
+    given-names: "Peter"
+    email: "peter.malmkjaer@gmail.com"
+keywords:
+  - academic writing
+  - textbook production
+  - LaTeX
+  - numbering and cross-reference audit
+  - citation verification
+  - LLM skills

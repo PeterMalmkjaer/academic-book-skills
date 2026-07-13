@@ -42,9 +42,31 @@ layout bug slipped through.
 
 ## Install
 
-Copy or symlink the desired skill folder(s) into your Claude skills directory
-(`~/.claude/skills/`), or package as a plugin/marketplace.
+This repo is a **Claude plugin marketplace**. Add it once, then install the skills you want.
+
+**Claude Code (CLI):**
+
+```
+claude plugin marketplace add PeterMalmkjaer/academic-book-skills
+claude plugin install pm-konsistens-audit@academic-book-skills
+# other skills: academic-book, faglig-bog, academic-source-verification, pm-bog
+```
+
+**Cowork:** Customize → Plugins → **Add marketplace** → `PeterMalmkjaer/academic-book-skills`,
+then install the individual skills.
+
+You can also run a script directly without installing, e.g.
+`python3 pm-konsistens-audit/scripts/audit_all.py --help`.
+
+## Updating
+
+Bump the `version` in the relevant `<skill>/.claude-plugin/plugin.json`, commit and push, then
+`claude plugin marketplace update academic-book-skills` (or click **Update** on the marketplace in Cowork).
 
 ## Licence
 
-MIT — see `LICENSE`.
+MIT — see [`LICENSE`](./LICENSE). Copyright © 2026 Peter Malmkjær. Applies to code and documentation.
+
+## Citation
+
+If you use or adapt these skills, please cite — see [`CITATION.cff`](./CITATION.cff).
