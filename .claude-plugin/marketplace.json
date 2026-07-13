@@ -1,0 +1,47 @@
+{
+  "name": "academic-book-skills",
+  "owner": {
+    "name": "Peter Malmkjaer"
+  },
+  "metadata": {
+    "description": "Book-production skills for writing, structuring and typesetting academic textbooks and monographs in LaTeX — the form/production side of a book project.",
+    "homepage": "https://github.com/PeterMalmkjaer/academic-book-skills"
+  },
+  "plugins": [
+    {
+      "name": "academic-book",
+      "displayName": "Academic Book (EN)",
+      "source": "./academic-book",
+      "description": "Structure, number, build and typeset an academic textbook or monograph in LaTeX — chapter templates, box/case numbering, front/back matter, cover and print-quality checklists.",
+      "category": "productivity"
+    },
+    {
+      "name": "faglig-bog",
+      "displayName": "Faglig Bog (DA)",
+      "source": "./faglig-bog",
+      "description": "Dansk søster til academic-book: struktur, nummerering, LaTeX-build og trykklargøring af en faglig lærebog eller monografi.",
+      "category": "productivity"
+    },
+    {
+      "name": "pm-konsistens-audit",
+      "displayName": "PM Konsistens-Audit",
+      "source": "./pm-konsistens-audit",
+      "description": "Consistency and reference audit for a LaTeX textbook: consecutive numbering per chapter, dangling cross-references, concept-register/appendix pointers, references.bib integrity and typeless box-pointers.",
+      "category": "productivity"
+    },
+    {
+      "name": "academic-source-verification",
+      "displayName": "Academic Source Verification",
+      "source": "./academic-source-verification",
+      "description": "Three-check citation verification (metadata/DOI plus content) and a reference-ledger builder for academic manuscripts — flags unverifiable sources, never fabricates references.",
+      "category": "productivity"
+    },
+    {
+      "name": "pm-bog",
+      "displayName": "PM-bog (opt-in)",
+      "source": "./pm-bog",
+      "description": "Opt-in project skill for the CBS Performance Management textbook — chapter map, LaTeX build, box definitions and known-good baseline facts. Invoke by name only.",
+      "category": "productivity"
+    }
+  ]
+}

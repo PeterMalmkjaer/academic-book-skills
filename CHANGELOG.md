@@ -3,6 +3,20 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [0.7.5] — 2026-07-13
+
+### Packaging
+- The repo is now installable as a **Cowork/Claude Code plugin marketplace**. Added
+  `.claude-plugin/marketplace.json` at the root (lists the five skills as plugins) and a
+  `.claude-plugin/plugin.json` in each skill directory (`academic-book`, `faglig-bog`,
+  `pm-konsistens-audit`, `academic-source-verification`, `pm-bog`). No files moved — each skill's
+  root `SKILL.md` is auto-discovered as its plugin's skill, so direct script paths (e.g.
+  `pm-konsistens-audit/scripts/audit_all.py`) are unchanged. Enables
+  `claude plugin marketplace add PeterMalmkjaer/academic-book-skills` and install via Cowork →
+  Customize → Plugins → Add marketplace. Plugin versions seeded from this CHANGELOG
+  (academic-book 0.5.0, faglig-bog 0.5.0, pm-konsistens-audit 0.7.4,
+  academic-source-verification 0.6.1, pm-bog 0.1.0).
+
 ## [0.7.4] — 2026-07-11
 
 ### Added

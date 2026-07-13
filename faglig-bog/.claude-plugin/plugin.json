@@ -1,0 +1,9 @@
+{
+  "name": "faglig-bog",
+  "version": "0.5.0",
+  "description": "Dansk søster til academic-book: struktur, nummerering, LaTeX-build og trykklargøring af en faglig lærebog eller monografi.",
+  "author": {
+    "name": "Peter Malmkjaer"
+  },
+  "homepage": "https://github.com/PeterMalmkjaer/academic-book-skills"
+}

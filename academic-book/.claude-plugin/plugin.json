@@ -1,0 +1,9 @@
+{
+  "name": "academic-book",
+  "version": "0.5.0",
+  "description": "Structure, number, build and typeset an academic textbook or monograph in LaTeX — chapter templates, box/case numbering, front/back matter, cover and print-quality checklists.",
+  "author": {
+    "name": "Peter Malmkjaer"
+  },
+  "homepage": "https://github.com/PeterMalmkjaer/academic-book-skills"
+}

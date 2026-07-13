@@ -1,0 +1,9 @@
+{
+  "name": "pm-bog",
+  "version": "0.1.0",
+  "description": "Opt-in project skill for the CBS Performance Management textbook — chapter map, LaTeX build, box definitions and known-good baseline facts. Invoke by name only.",
+  "author": {
+    "name": "Peter Malmkjaer"
+  },
+  "homepage": "https://github.com/PeterMalmkjaer/academic-book-skills"
+}
