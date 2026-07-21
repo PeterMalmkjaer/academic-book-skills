@@ -96,6 +96,17 @@ then install the individual skills.
 You can also run a script directly without installing, e.g.
 `python3 pm-konsistens-audit/scripts/audit_all.py --help`.
 
+**Before running the DOI/metadata scripts**, set your own e-mail address — Crossref's polite pool
+uses it to identify who is calling, so it must be yours:
+
+```
+export CROSSREF_MAILTO='you@example.org'
+```
+
+The scripts stop with an explanatory message rather than run without it. Nothing else is
+required, and nothing leaves your machine except read-only lookups to Crossref — see
+[§7](#7-where-your-material-goes--and-where-it-does-not).
+
 ## Updating
 
 Bump the `version` in the relevant `<skill>/.claude-plugin/plugin.json`, commit and push, then
@@ -218,7 +229,47 @@ Specifically:
   advice, and are no substitute for peer review, professional proofreading, a publisher's own
   processes, or your institution's rules.
 
-### 7. Third-party services, data and confidentiality
+### 7. Where your material goes — and where it does not
+
+**Everything stays on your machine.** These skills run locally, in your own working directory,
+on your own copy. Their outputs — audit reports, DOI proposals, the reference ledger — are
+written as ordinary files beside your manuscript, under your control.
+
+**The author receives nothing.** There is no telemetry, no analytics, no usage tracking, no
+crash reporting and no "phone home" of any kind. Nothing is uploaded to the author, to this
+repository, or to the author's machine, and **no mechanism exists in this code to do so**. The
+author has no visibility into whether, how, or on what you use these skills.
+
+**Your manuscript and your sources are yours alone.** Your text, your PDFs, your notes, your
+`references.bib` and your ledger never enter this repository or reach the author. Nothing
+belonging to you, to your institution, to a publisher or to any third party should ever be
+placed here — please do not attach manuscript extracts, source full texts, licensed PDFs or
+confidential material to a GitHub issue or pull request. Keep it on your own machine.
+
+**The one outbound call the scripts make.** `academic-source-verification`'s DOI and metadata
+scripts query **`api.crossref.org`**, the public Crossref metadata API, over read-only HTTPS GET
+requests. What is sent is the bibliographic strings you ask about — a DOI, a title, an author
+name — never your manuscript text. Nothing is sent anywhere else, and nothing is POSTed,
+uploaded or stored remotely.
+
+Those scripts require you to set your **own** e-mail address first:
+
+```
+export CROSSREF_MAILTO='you@example.org'
+```
+
+Crossref's "polite pool" uses that address to identify the caller and to make contact about
+traffic from your machine. It must therefore be yours, not the author's — the scripts refuse to
+run rather than attribute your requests to someone else.
+
+**Beyond the scripts**, whatever the AI assistant itself transmits while following a skill is
+governed by your own agent and model provider, and by the services you point it at. That is
+outside the author's control — see the next section.
+
+**Responsibility follows use.** The person who runs a skill is responsible for what they run it
+on, what it sends, and what they do with the result.
+
+### 8. Third-party services, data and confidentiality
 
 Running these skills may transmit parts of your manuscript, your queries, source metadata and
 excerpts to third-party services — including model providers and literature or web services such
@@ -239,7 +290,7 @@ Before use, consider that:
 
 You are responsible for determining what you may lawfully and permissibly send, and to where.
 
-### 8. Intended audience and support
+### 9. Intended audience and support
 
 The material was written for the author's own book project in a Copenhagen Business School
 context, and is **recommended primarily for academics at CBS**, who will have the institutional
@@ -254,7 +305,7 @@ by-product of an ongoing book project. Skills may change substantially, be renam
 withdrawn at any time without notice, and no backward compatibility is promised. Issues and pull
 requests may go unanswered.
 
-### 9. Feedback
+### 10. Feedback
 
 Bug reports and improvements are welcome via GitHub issues, but see the previous paragraph: no
 response is guaranteed. Please do not include confidential or unpublished manuscript material in

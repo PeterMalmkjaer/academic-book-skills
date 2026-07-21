@@ -13,10 +13,16 @@ READ-ONLY: never edits references.bib. Writes METADATA_CHECK_REPORT.md.
 Run on a machine with internet, from the project root:
     python3 00_meta/translation/metadata_check.py references.bib
 """
+import os
 import re, sys, json, time, urllib.parse, urllib.request, urllib.error, difflib
 
 BIB    = sys.argv[1] if len(sys.argv) > 1 else "references.bib"
-MAILTO = "peter.malmkjaer@gmail.com"
+MAILTO = os.environ.get("CROSSREF_MAILTO", "").strip()
+if not MAILTO:
+    sys.exit("Set CROSSREF_MAILTO to your own e-mail address before running.\n"
+             "CrossRef's polite pool identifies the caller, so it must be YOUR address,\n"
+             "not the author's — CrossRef contacts it about traffic from your machine.\n"
+             "  export CROSSREF_MAILTO='you@example.org'")
 UA     = {"User-Agent": f"MetaCheck/1.0 (mailto:{MAILTO})"}
 
 def norm(s):
