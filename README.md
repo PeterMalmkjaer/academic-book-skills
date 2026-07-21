@@ -10,10 +10,17 @@ and [`academic-danish-skills`](https://github.com/PeterMalmkjaer/academic-danish
 **This is an experiment, shared as-is.** These skills were built for one real book project and
 are published in case they are useful to someone else — not as a finished product. There is no
 warranty of any kind, no support, and **no liability whatsoever** for anything produced with
-them, including errors in a manuscript, a citation, a build, or a published book. You are
-responsible for checking every output. Nothing here removes the author's own responsibility for
-their work. Machine-assisted checking is not verification, and the absence of a flag is not
-evidence that nothing is wrong.
+them, including errors in a manuscript, a citation, a build, or a published book.
+
+**Responsibility sits with whoever runs the skill — entirely.** Every obligation attaching to
+your work stays yours: research integrity, your institution's rules on AI use, your publishing
+contract and its disclosure policy, copyright clearance, GDPR, library licence terms,
+examination rules, and the accuracy of every fact and citation. The developer of these skills
+carries none of it, has no duty of care towards your manuscript, no reviewing or supervisory
+role, and gives no assurance about your work. Running a skill is never evidence that you have
+complied with anything. Machine-assisted checking is not verification, and the absence of a flag
+is not evidence that nothing is wrong. See
+[§6](#6-responsibility-rests-entirely-with-the-user-of-the-skill) for the detail.
 
 **Written for CBS, usable beyond it.** These skills were built in a Copenhagen Business School
 context and are recommended primarily for **academics at CBS**, who will have the library access
@@ -210,24 +217,72 @@ its use, including without limitation:
 
 Nothing in this section excludes or limits liability that cannot lawfully be excluded or limited.
 
-### 6. Your responsibility as author
+### 6. Responsibility rests entirely with the user of the skill
 
-**These skills do not verify anything on your behalf, and using them does not discharge any duty
-you owe.** The author of a manuscript remains solely and fully responsible for its content,
-including every factual claim, quotation, citation, reference and permission.
+This section is the most important one in this document. Please read it before running anything.
 
-Specifically:
+**The person who uses a skill carries every obligation attaching to the work it is used on. The
+developer of the skill carries none of them.** Using these skills does not transfer, share,
+reduce or discharge any duty you owe to anyone — not to your institution, your publisher, your
+funder, your co-authors, your examiners, your readers, or the law. A tool cannot assume a
+responsibility that is yours; it can only be one of the means by which you discharge it, and it
+is your judgement, not the tool's output, that determines whether you have.
+
+The developer has **no duty of care towards your manuscript, no supervisory or reviewing role,
+no role as co-author or contributor, and gives no assurance of any kind about your work**. The
+developer does not see your work, cannot assess it, and is in no position to vouch for it. You
+must not represent, cite, or imply that use of these skills constitutes verification,
+proofreading, review, quality assurance, endorsement, or compliance with any standard.
+
+#### 6.1 What remains entirely yours to ensure
+
+Running a skill does **not** establish compliance with any of the following. Ensuring compliance
+is yours alone, and you should assume the skill knows nothing about your obligations:
+
+- **Research integrity and good scientific practice** — including the Danish Code of Conduct for
+  Research Integrity and any equivalent code applying to you, and your institution's rules on
+  authorship, attribution, data handling and misconduct.
+- **Your institution's policies**, including any policy on the use of AI tools in research,
+  writing, teaching, supervision or assessment — including whether such use is permitted at all
+  in your context, and how it must be declared.
+- **Publisher and contractual obligations** — your publishing agreement, editorial and
+  AI-disclosure policies, embargoes, licence grants, warranties you have given a publisher about
+  originality and clearance, and any non-disclosure agreement.
+- **Funder requirements**, including open-access, data-management and disclosure conditions.
+- **Copyright and permissions** — clearing rights for every quotation, figure, table, dataset or
+  adapted element reproduced in your work, and observing fair-dealing and citation-practice
+  limits. The skills do not clear permissions and cannot tell you whether you have them.
+- **Data protection** — GDPR and your institution's information-security rules for any personal,
+  confidential, sensitive or special-category data present in your material.
+- **Library and database licence terms** — the conditions under which you may access, download
+  and retain licensed full text, including prohibitions on automated or bulk retrieval.
+- **Examination and assessment rules**, if the work is submitted for a degree or credit.
+- **Accuracy of the finished work** — every fact, figure, quotation, citation, reference,
+  cross-reference, number, name and date, whether or not a skill examined it.
+- **Any other legal, regulatory, professional or ethical obligation** applying to you or your
+  work, whether or not it is named above. This list is illustrative and not exhaustive.
+
+#### 6.2 What the skills do not do
 
 - Machine-assisted checking **is not verification**. Every result — flagged or unflagged — must
-  be confirmed by a human against the actual source.
-- The audit ledger documents **what was done**, not what is true. It is a record of process, and
-  is only as good as the human sign-off recorded in it.
-- The derived AI/source declaration is a **template based on your own entries**. You are
-  responsible for its accuracy and for its adequacy under your publisher's, institution's or
-  funder's policy on AI use.
-- These skills are **not** legal, publishing, contractual, research-integrity or professional
-  advice, and are no substitute for peer review, professional proofreading, a publisher's own
-  processes, or your institution's rules.
+  be confirmed by a human against the actual source. A clean report means the checks found
+  nothing, not that nothing is there.
+- The audit ledger documents **what was done, not what is true**. It records process, and is
+  worth exactly as much as the human sign-off entered in it. It is not evidence that your
+  sources are sound and must not be presented as such.
+- The derived AI/source declaration is a **template populated from your own entries**. Its
+  accuracy, completeness and adequacy under whatever policy governs you are your responsibility,
+  and you should have it checked by someone competent to judge that policy.
+- The skills are **not legal, publishing, contractual, research-integrity, data-protection or
+  other professional advice**, and are no substitute for peer review, professional proofreading,
+  a publisher's own processes, your institution's rules, or qualified advice.
+
+#### 6.3 If you are unsure
+
+If you cannot tell whether a use is permitted — by your institution, your publisher, your funder
+or the law — **resolve that before you run anything**, with the people whose job it is to answer.
+Do not treat this repository, or the fact that it exists and is public, as permission,
+reassurance, or precedent.
 
 ### 7. Where your material goes — and where it does not
 

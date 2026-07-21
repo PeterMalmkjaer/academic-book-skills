@@ -4,7 +4,7 @@
     "name": "Peter Malmkjaer"
   },
   "metadata": {
-    "description": "Book-production skills for writing, structuring and typesetting academic textbooks and monographs in LaTeX — the form/production side of a book project. Experimental, shared as-is with no warranty or liability; check every output. Source verification assumes institutional library access for full-text checks (written around a CBS login; substitutable with your own university's access)."
+    "description": "Book-production skills for writing, structuring and typesetting academic textbooks and monographs in LaTeX — the form/production side of a book project. Experimental, shared as-is with no warranty or liability. Responsibility rests entirely with whoever runs the skill — research integrity, institutional AI policy, publisher contract, copyright clearance, GDPR and the accuracy of every citation stay yours; the developer carries none of it and gives no assurance about your work. Everything runs locally; the developer receives nothing. Source verification assumes institutional library access for full-text checks (written around a CBS login; substitutable with your own university's access)."
   },
   "plugins": [
     {
