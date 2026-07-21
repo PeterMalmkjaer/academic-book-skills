@@ -5,6 +5,32 @@ monographs in LaTeX — the **form / production** side of a book project. Compan
 content-editing families [`academic-english-skills`](https://github.com/PeterMalmkjaer/academic-english-skills)
 and [`academic-danish-skills`](https://github.com/PeterMalmkjaer/academic-danish-skills).
 
+## Please read before you install
+
+**This is an experiment, shared as-is.** These skills were built for one real book project and
+are published in case they are useful to someone else — not as a finished product. There is no
+warranty of any kind, no support, and **no liability whatsoever** for anything produced with
+them, including errors in a manuscript, a citation, a build, or a published book. You are
+responsible for checking every output. Nothing here removes the author's own responsibility for
+their work. See the [MIT licence](./LICENSE).
+
+**Institutional library access.** `academic-source-verification` verifies whether a source
+actually supports the claim made about it, which means reading the source full text. It is
+written around `cbs-libsearch`, a full-text/annotation backend tied to a **Copenhagen Business
+School login**, which you will not have.
+
+This does not make the skill unusable elsewhere — the full-text step is one backend among
+several, and the skill also drives scite, Elicit and open web/Exa lookups, which need no
+institutional login. Most universities provide equivalent online library access (EZproxy,
+OpenAthens, Shibboleth, or a publisher-federated login). If you have that, substitute your own
+library's full-text route where the skill says `cbs-libsearch`; the method, the ledger format
+and the three checks are unchanged. If you have no institutional access at all, the metadata
+and retraction checks still work — the claim-fidelity check will fall back to whatever full
+text is openly available.
+
+**`pm-bog` is not for you.** It is a project baseline for one specific textbook and is opt-in by
+name. It is in this repo for reproducibility, not reuse.
+
 ## Skills in this repo
 
 | Skill | Language | Purpose |

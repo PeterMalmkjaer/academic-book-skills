@@ -4,7 +4,7 @@
     "name": "Peter Malmkjaer"
   },
   "metadata": {
-    "description": "Book-production skills for writing, structuring and typesetting academic textbooks and monographs in LaTeX — the form/production side of a book project."
+    "description": "Book-production skills for writing, structuring and typesetting academic textbooks and monographs in LaTeX — the form/production side of a book project. Experimental, shared as-is with no warranty or liability; check every output. Source verification assumes institutional library access for full-text checks (written around a CBS login; substitutable with your own university's access)."
   },
   "plugins": [
     {
@@ -32,14 +32,14 @@
       "name": "academic-source-verification",
       "displayName": "Academic Source Verification",
       "source": "./academic-source-verification",
-      "description": "Three-check citation verification (metadata/DOI plus content) and a reference-ledger builder for academic manuscripts — flags unverifiable sources, never fabricates references.",
+      "description": "Three-check citation verification (metadata/DOI plus content) and a reference-ledger builder for academic manuscripts — flags unverifiable sources, never fabricates references. The claim-fidelity check reads source full text and is written around a CBS-login backend; substitute your own institutional library access (EZproxy/OpenAthens/Shibboleth). Metadata and retraction checks need no login. Experimental, no warranty — verify every result yourself.",
       "category": "productivity"
     },
     {
       "name": "pm-bog",
       "displayName": "PM-bog (opt-in)",
       "source": "./pm-bog",
-      "description": "Opt-in project skill for the CBS Performance Management textbook — chapter map, LaTeX build, box definitions and known-good baseline facts. Invoke by name only.",
+      "description": "Opt-in project skill for one specific textbook (CBS Performance Management) — chapter map, LaTeX build, box definitions and known-good baseline facts. Published for reproducibility, not reuse: it will not be useful for your book. Invoke by name only.",
       "category": "productivity"
     }
   ]
