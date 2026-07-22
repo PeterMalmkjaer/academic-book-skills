@@ -63,6 +63,14 @@ audit (og derefter typografi + build) igen.
    - **Typeløse box-pointere (sektion 5):** flager bar `Box N.N` (anglicisme + ikke type-kvalificeret)
      og eskalerer til HARDT FLAG når N.N er tvetydigt (findes som både Teoriboks og Perspektivboks).
      Scanner kilde + `--register` + `--appendix`. Se afsnit nedenfor.
+   - **Afsnits-/kapitel-prosa-henvisninger (sektion 6):** validér at hvert hårdkodet
+     "Section/Afsnit X.Y" og "Chapter/Kapitel N" i prosaen findes (ikke `\ref`, så LaTeX
+     validerer dem ikke). Dangling = HARDT FLAG. Case-insensitivt (dækker EN + DA).
+   - **Unummererede `\chapter*` header-mærke (sektion 7, valgfri `--structure`):** flager
+     `\chapter*{Titel}` uden efterfølgende `\markboth` (→ stale løbende header fra forrige
+     nummererede kapitel) og manglende `\addcontentsline{toc}` (REVIEW). `\section*` er
+     bevidst ude. Angiv front/bag-matter via `--structure` (de unummererede overskrifter
+     ligger uden for `kap*_body`).
 3. **Verificér semantik manuelt** for hvert flag (skillen foreslår, beslutter ikke).
    Byg begreb→afsnitstitel-kort fra `\section`-titler; sammenlign mod henvisningens mål.
 4. **Ret transaktionelt.** For hver rettelse: assertér at ankeret (begreb + gammelt
@@ -158,6 +166,8 @@ Ret aldrig en citation uden eksplicit brugerbeslutning (flag som "beskyttet").
   `kap*_body.tex`), `--aux` (default `main.aux`; springes over hvis fraværende), `--bib` (default
   `references.bib`; aktiverer sektion 3 reference-integritet), `--register` (default
   `konceptregister_body.tex`) og `--appendix` (default `09_Back_Matter/appendiks_b_teorioversigt.tex`)
-  til sektion 5 typeløse box-pointere; `--out` (markdown-rapport).
-  Sektion 4 (kapitel-skabelon) + sektion 5 (typeløse box-pointere) kører altid — kræver kun `.tex`.
-  Eksempel: `python3 scripts/audit_all.py --src "kap*_body.tex" --aux main.aux --bib references.bib --register konceptregister_body.tex --appendix 09_Back_Matter/appendiks_b_teorioversigt.tex --out KATEGORI_AUDIT.md`
+  til sektion 5 typeløse box-pointere; `--structure` (komma-separerede globs af front/bag-matter
+  `.tex` til sektion 7 `\chapter*`-header-tjek); `--out` (markdown-rapport).
+  Sektion 4 (kapitel-skabelon), 5 (typeløse box-pointere), 6 (prosa-henvisninger) + 7
+  (`\chapter*`-headers) kører altid — kræver kun `.tex`.
+  Eksempel: `python3 scripts/audit_all.py --src "kap*_body.tex" --aux main.aux --bib references.bib --register konceptregister_body.tex --appendix 09_Back_Matter/appendiks_b_teorioversigt.tex --structure "afterword_body.tex,00_Front_Matter/*.tex" --out KATEGORI_AUDIT.md`

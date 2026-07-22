@@ -3,6 +3,28 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [0.9.0] — 2026-07-22
+
+### Added
+- `pm-konsistens-audit` (`audit_all.py`): **section 7 — unnumbered `\chapter*` header-mark
+  (`\markboth`) + TOC hygiene.** Catches a *silent* class of error the compiler and general
+  linters (ChkTeX/lacheck) both miss: an unnumbered `\chapter*` does **not** call
+  `\chaptermark`, so with `fancyhdr` the running header keeps showing the *previous numbered
+  chapter's* name (e.g. an Afterword displaying "Chapter 17"). Section 7 flags every author
+  `\chapter*{Title}` that is not followed (within a short window) by `\markboth` (HARD flag →
+  stale running header) and, as a REVIEW note, any missing `\addcontentsline{toc}` (heading
+  absent from the TOC). `\section*` is intentionally out of scope (end-matter such as
+  "Discussion Questions" legitimately uses `\section*`; the chapter's `\leftmark` stays
+  correct). Package-generated chapters (`\tableofcontents`, biblatex `\printbibliography`) are
+  not author `\chapter*` and are naturally skipped.
+- New `--structure` argument: comma-separated globs of front/back-matter `.tex` (the
+  unnumbered headings live outside `kap*_body.tex`), scanned by section 7 alongside `--src`.
+- **Motivation / worked example:** the PM textbook had this exact bug in 7 headings across
+  both editions (EN Afterword, Foreword, Chapter Overview, The Making of This Book; DA Forord,
+  Kapiteloversigt, Bogens Tilblivelse). Verified: the detector flags all of them *before* the
+  `\markboth` fix and reports **0** after; it does **not** flag the numbered appendices,
+  References, Concept Register or the TOC (the known-good cases). Sections 1–6 unchanged.
+
 ## [0.8.0] — 2026-07-13
 
 ### Added

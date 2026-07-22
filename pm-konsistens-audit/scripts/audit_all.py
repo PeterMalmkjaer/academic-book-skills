@@ -356,6 +356,55 @@ def check_section_refs(src, out):
     return hard
 
 
+# Sektion 7: unummererede \chapter* skal sætte \markboth (ellers stale løbende header fra
+# forrige nummererede kapitel — \chapter*/\section* kalder IKKE \chaptermark/\sectionmark, og
+# fancyhdr genbruger derfor \leftmark/\rightmark). Kanonisk fix: \markboth{Titel}{Titel} lige
+# efter. \section* er BEVIDST ude (end-matter som "Discussion Questions"/"Summary" bruger
+# legitimt \section* uden mærke; kapitlets \leftmark er stadig korrekt). Pakke-genererede
+# kapitler (\tableofcontents, biblatex \printbibliography) står ikke som \chapter* i kilden.
+STAR_CHAP = re.compile(r'\\chapter\*\s*\{([^}]*)\}')
+MARKBOTH  = re.compile(r'\\markboth\b')
+ADDTOC    = re.compile(r'\\addcontentsline\s*\{toc\}')
+
+def check_star_headings(files, out):
+    """Sektion 7: hver \\chapter*{Titel} skal sætte \\markboth (HARDT FLAG hvis ikke →
+    stale løbende header) og bør have \\addcontentsline{toc} (REVIEW hvis ikke → mangler i
+    indholdsfortegnelsen). Kommentar-bevidst; kigger op til 4 kode-linjer frem efter \\chapter*.
+    Scanner src + evt. front/bag-matter (--structure). Kun .tex (ingen build)."""
+    out.append("## 7. Unummererede \\chapter* — header-mærke (\\markboth) + TOC\n")
+    hard=0; review=0; total=0
+    for f in sorted(files):
+        lines=files[f].splitlines()
+        for i,line in enumerate(lines):
+            if line.lstrip().startswith('%'): continue
+            code=re.split(r'(?<!\\)%', line, 1)[0]
+            m=STAR_CHAP.search(code)
+            if not m: continue
+            total+=1; title=m.group(1).strip()
+            win=[]
+            for j in range(i+1, min(i+9, len(lines))):
+                lj=lines[j]
+                if lj.lstrip().startswith('%'): continue
+                cj=re.split(r'(?<!\\)%', lj, 1)[0]
+                if cj.strip(): win.append(cj)
+                if len(win)>=4: break
+            w="\n".join(win)
+            if not MARKBOTH.search(w):
+                hard+=1
+                out.append(f"- ⚠⚠ {f}:{i+1} \\chapter*{{{title}}} sætter ikke \\markboth → løbende header viser forrige kapitel [HARDT FLAG]")
+            if not ADDTOC.search(w):
+                review+=1
+                out.append(f"- ⚠ {f}:{i+1} \\chapter*{{{title}}} har ingen \\addcontentsline{{toc}} → ikke i indholdsfortegnelsen [REVIEW]")
+    if total==0:
+        out.append("- (ingen \\chapter* i de scannede filer — angiv front/bag-matter via --structure)\n")
+    else:
+        s=(f"- {total} \\chapter*; alle sætter \\markboth ✓" if hard==0
+           else f"- **{hard} \\chapter* uden \\markboth [HARDT FLAG]** af {total}")
+        if review: s+=f"; {review} uden TOC [review]"
+        out.append(s+"\n")
+    return hard
+
+
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument('--src',default='kap*_body.tex')
@@ -364,6 +413,7 @@ def main():
     ap.add_argument('--bib',default='references.bib',help='references.bib til reference-integritet (sektion 3)')
     ap.add_argument('--register',default='konceptregister_body.tex',help='konceptregister til typeløs-box-tjek (sektion 5)')
     ap.add_argument('--appendix',default='09_Back_Matter/appendiks_b_teorioversigt.tex',help='appendiks til typeløs-box-tjek (sektion 5)')
+    ap.add_argument('--structure',default='',help='front/bag-matter .tex (komma-separerede globs) til sektion 7 (\\chapter*-header-tjek)')
     a=ap.parse_args()
     src=load_sources(a.src)
     if not src: print("Ingen kildefiler matchede",a.src); sys.exit(1)
@@ -381,8 +431,14 @@ def main():
     extra=[f for f in (a.register,a.appendix) if f and os.path.exists(f)]
     p5=check_bare_pointers(src,extra,out)
     p6=check_section_refs(src,out)
-    total=p1+p2+p3+p4+p5+p6
-    out.append(f"\n## Konklusion\n{'RENT ✓ — 0 afvigelser.' if total==0 else f'{total} punkter til gennemgang (numre/henvisninger: '+str(p1+p2)+', reference-integritet: '+str(p3)+', kapitel-skabelon: '+str(p4)+', typeløse box-pointere: '+str(p5)+', afsnits-henvisninger: '+str(p6)+').'}")
+    struct={f:txt for f,(_,txt) in src.items()}
+    for pat in [p.strip() for p in a.structure.split(',') if p.strip()]:
+        for f in glob.glob(pat):
+            try: struct[f]=open(f,encoding='utf-8').read()
+            except OSError: pass
+    p7=check_star_headings(struct,out)
+    total=p1+p2+p3+p4+p5+p6+p7
+    out.append(f"\n## Konklusion\n{'RENT ✓ — 0 afvigelser.' if total==0 else f'{total} punkter til gennemgang (numre/henvisninger: '+str(p1+p2)+', reference-integritet: '+str(p3)+', kapitel-skabelon: '+str(p4)+', typeløse box-pointere: '+str(p5)+', afsnits-henvisninger: '+str(p6)+', chapter*-headers: '+str(p7)+').'}")
     open(a.out,'w',encoding='utf-8').write("\n".join(out))
     print(f"Rapport skrevet: {a.out}  ({total} flag)")
 
