@@ -229,6 +229,9 @@ Terminological key (examples):
 | Informationsprincippet | Holmström's informativeness principle |
 | Organisatorisk retfærdighed | Organizational justice |
 
+**Casing is language-dependent — NEVER mirror casing across editions.**
+Danish uses **sentence case** (Dansk Sprognævn, Retskrivningsreglerne §11–14): only the first word + proper nouns/named theories capitalized — in headings, box titles AND the concept/index register. American/English, by contrast, uses **Title Case** (Chicago Manual of Style / APA) for headings and feature-box titles. So a Danish sentence-case decision must NOT carry over to the English edition (or vice versa) — each edition follows its own language's norm. Proper nouns, acronyms and named theories stay capitalized in both; quoted English titles in ``…'' keep their own form. It is *deliberately correct* that the same concept is sentence case in Danish and Title Case in English — this is not a cross-edition inconsistency.
+
 ---
 
 ## Copyright — Quick Reference

@@ -337,3 +337,21 @@ with open('kap01_body.tex', 'w') as f:
 | `KILDEVERIFICERING_LOG.txt` | Log fra v33-session (Cowork, 2026-03-23) |
 | `backups/backup-2026-03-18-*/` | v32-periode backup |
 | `BACKUP_2026-03-13_foer_pdf/` | Pre-PDF baseline |
+
+---
+
+## 15. Opdateringer 2026-07-24 (tekst-frys — går forud for v28-baseline hvor de er i konflikt)
+
+Ved tekst-frysen voksede bogen til **~437 sider** (v28-baseline nævner 368 — forældet). Følgende praksis/beslutninger er nu fastlagte og går forud for ældre eksempler i denne skill:
+
+**Build — brug `build.command`, ikke rå kald, og byg via Terminal.app.**
+`build.command` (i projektroden) kører xelatex→biber→xelatex→xelatex, er nu **PATH-hærdet** (`export PATH=/Library/TeX/texbin:…`) og har en **guard** der afbryder højlydt hvis `xelatex`/`biber` mangler. FALDGRUBE: kør den via `tell application "Terminal" to do script …` (login-shell → fuld PATH). `osascript … do shell script "./build.command"` har **minimal PATH** → `command not found`, men scriptet parser den GAMLE `main.log` og melder falsk "Færdig" (main.pdf opdateres ikke). Verificér altid `main.pdf`-mtime + `Output written on main.pdf` efter build.
+
+**House-style: dansk sætningscase (DSN §11–14) — bokstitler OG konceptregister.**
+Bokstitler og registerets Navn-kolonne skrives i **sætningscase**: kun første ord + egennavne + navngivne teorier med stort. Behold: egennavne (Adams, Kaplan), akronymer (AI, R'er), forfatter/år-parenteser, engelske citater i ``…'', og navngivne teorier (Equity Theory, Agency Theory, Balanced Scorecard, Equal Compensation Principle, …). Sænk danske beskrivende ord og begrebs-agtige engelske termer (informativeness principle, asset specificity, transfer pricing, …). **NB:** ældre eksempler i §6/§7 (fx "Case 9.4: … Når Kun Testresultater Tæller", "Box X.Y") viser den GAMLE Title Case — den er nu ensrettet til sætningscase; labels er typede ("Teoriboks/Perspektivboks", ikke "Box"). Engelsk udgave er derimod **Title Case** (CMOS/APA) — casing spejles ALDRIG mellem sprog.
+
+**Løbende sidehoveder — `\section*`/`\chapter*` opdaterer ikke marks.**
+`\section*` sætter ikke `\rightmark`, og `\chapter*` sætter ikke `\leftmark` → slut-apparat + efterskrift + front matter hang på forrige nummer/kapitel. Fix (titlesec-sikkert, IKKE global `\section*`-redefinition): `\markright{kort form}` umiddelbart efter hver slut-`\section*` (Perspektivering/Diskussionsspørgsmål/Videre læsning + evt. Appendiks N.A) og `\markboth{Titel}{Titel}` efter hver `\chapter*` (efterskrift + front matter: Forord/Kapiteloversigt/Bogens Tilblivelse).
+
+**Reference-integritet — LÆS pm-konsistens-audit §3.A, ikke kun "0 flag".**
+Bogen bruger tekstuelle forfatter-år-referencer + `\nocite{*}` og ingen `\cite`. Derfor kan et citeret-men-manglende værk ALDRIG blive et hardt flag — det dukker kun op i **§3.A review-listen** (A1 høj-signal = efternavn slet ikke i bib; A2 = efternavn i bib, men ikke dette år → muligt manglende udgave). Kør `audit_all.py --bib references.bib` og gennemgå §3.A. (7 sådanne huller blev tilføjet 2026-07-24: Dutton/Dukerich/Harquail 1994, Paulhus & Williams 2002, Harris & Schaubroeck 1988, Aguinis/Joo/Gottfredson 2011, Bol 2011, Buckingham & Goodall 2019, Zimmerman 2020.)

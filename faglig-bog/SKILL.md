@@ -217,6 +217,9 @@ Terminologisk nøgle (eksempler):
 | Informationsprincippet | Holmström's informativeness principle |
 | Organisatorisk retfærdighed | Organizational justice |
 
+**Casing er sprogafhængig — spejl ALDRIG casing mellem udgaver.**
+Dansk følger **sætningscase** (Dansk Sprognævn, Retskrivningsreglerne §11–14): kun første ord + egennavne/navngivne teorier med stort — i overskrifter, bokstitler OG stikords-/begrebsregistre. Amerikansk/engelsk følger derimod **Title Case** (Chicago Manual of Style / APA) for overskrifter og feature-boks-titler. En dansk sætningscase-beslutning må derfor IKKE overføres til den engelske udgave (og omvendt) — hver udgave følger sit eget sprogs norm. Egennavne, akronymer og navngivne teorier beholder stort i begge; engelske citater i »…« beholder deres egen form. Det er *bevidst korrekt*, at samme begreb er sætningscase på dansk og Title Case på engelsk — det er ikke en udgaves-inkonsistens.
+
 ---
 
 ## Copyright — Hurtig Reference
