@@ -109,10 +109,21 @@ def _deacc(x):
 def _norm_sur(x):
     return re.sub(r'[^a-zA-Z]','', _deacc(x)).lower()
 
-# Kendte ikke-efternavne (virksomheder/magasiner/ord) der giver A-støj
+# Kendte ikke-efternavne (virksomheder/magasiner/ord) der giver A-stoej.
+# Udvidet 2026-07-24: struktur-navigation (Section/Afsnit/Figur/Tabel/Kapitel/Appendiks)
+# og tidsskrift-/titel-ord (Management/Appraisal/Review/...) er ALDRIG forfatternavne, men
+# fanges af parentes-med-aarstal-regexen (fx "(Section 6.3; Holmstrom, 1979)" -> "Section, 1979").
 _NOISE = {'og','al','et','se','jf','kap','boks','case','figur','tabel','del','the','of',
           'ceo','general','electric','today','accounting','forordning','microsoft',
-          'netflix','gallup','workhuman','textio','ge'}
+          'netflix','gallup','workhuman','textio','ge',
+          # struktur-navigation (aldrig forfatter)
+          'section','afsnit','figure','table','chapter','kapitel','appendix','appendiks',
+          'paragraph','note','box','def','definition','teoriboks','perspektivboks',
+          # tidsskrift-/titel-/regulerings-ord der optraeder foer aarstal i citations-parenteser
+          'regulation','act','management','appraisal','review','quarterly','bulletin',
+          'horizons','science','psychology','personality','research','economics',
+          'organization','organizational','behavior','behaviour','studies','human',
+          'performance','journal','annual','applied','academy','administrative'}
 
 def parse_bib(bib_path):
     raw=open(bib_path, encoding='utf-8').read()
@@ -193,11 +204,16 @@ def check_bib_integrity(src, bib_path, out):
             D.append(f"  - {k}: nøgle={km.group(1)} year={d['year']} ({d['title'][:40]})")
     # A) prosa uden nøgle (opdelt: høj signal vs støj)
     A_missing=[]; A_yrmis=[]
+    allsur=set(su)   # alle bib-efternavne (til partikel-suffix-match)
     for (s,y) in sorted(prose):
         if (s,y) in sy or (s.rstrip('s'),y) in sy: continue
         if s in su or s.rstrip('s') in su:
             yrs=sorted({keys[k]['year'] for k in su[s] if keys[k]['year']})
             A_yrmis.append(f"  - {s.capitalize()} ({y}) — efternavn findes, år: {','.join(yrs)}")
+        elif len(s)>=4 and any(bs.endswith(s) for bs in allsur):
+            # partikel-navn: prosa fanger kun sidste led (Van der Stede -> Stede),
+            # men bib har hele efternavnet (vanderstede). Ikke et ægte manglende navn.
+            A_yrmis.append(f"  - {s.capitalize()} ({y}) — del af flerleddet navn i bib (partikel, fx 'Van der {s.capitalize()}')")
         else:
             A_missing.append(f"  - {s.capitalize()} ({y}) — efternavn IKKE i bib")
     # B) orphan-nøgler

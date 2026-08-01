@@ -96,9 +96,17 @@ peger på en **ikke-eksisterende** bib-nøgle. `audit_all.py --bib references.bi
 
 Kun **C+D tæller som harde flag** (deterministiske). A og B er iboende støjende
 (co-forfattere, virksomheds-/magasinnavne, genitiver, diakritik) og listes som
-review-kandidater der IKKE fælder "RENT ✓". Scriptet deaccenter prosaen (ö→o, é→e) og
-fjerner genitiv-'s før navne-udtræk for at dæmpe falske positiver — men A-listen kræver
-altid menneskelig filtrering.
+review-kandidater der IKKE fælder "RENT ✓". Scriptet deaccenter prosaen (ö→o, é→e),
+fjerner genitiv-'s, fjerner LaTeX-kommentarer, og filtrerer via en stopliste for at dæmpe
+falske positiver — men A-listen kræver altid menneskelig filtrering.
+
+**v0.9.1 (2026-07-24) — A-liste-støjreduktion.** Stoplisten `_NOISE` er udvidet med
+struktur-navigations-ord (Section/Afsnit/Figur/Tabel/Kapitel/Appendiks) og tidsskrift-/
+titel-ord (Management/Appraisal/Review/…), fordi parentes-med-årstal-regexen ellers
+læser fx "(Section 6.3; Holmström, 1979)" som forfatteren "Section (1979)". Desuden en
+partikel-suffix-match: prosa fanger kun sidste led af flerleddede navne ("Van der Stede"
+→ "Stede"), men bib har hele navnet — sådanne flyttes fra høj- til lav-signal. Effekt på
+PM-bogen (EN): A-højsignal 24 → 3 (kun ægte huller tilbage), 0 falske C/D.
 
 ### Prioritering af fund (triage)
 - **P1 — læser-synlige fejl (ret først):** C-dubletter (dobbelt-trykt i litteraturlisten);
