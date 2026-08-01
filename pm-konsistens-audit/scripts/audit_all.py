@@ -232,14 +232,15 @@ def check_bib_integrity(src, bib_path, out):
     out.append("\n".join(C) if C else "  - (ingen)")
     out.append(f"### D) Nøglenavn≠year-felt [HARDT FLAG]: {len(D)}")
     out.append("\n".join(D) if D else "  - (ingen)")
-    out.append(f"### A) Prosa-citation uden nøgle [REVIEW, tæller ikke]:")
-    out.append(f"  Høj signal — efternavn slet ikke i bib ({len(A_missing)}):")
+    out.append(f"### A) Prosa-citation uden nøgle [REVIEW — tæller IKKE som flag, men tjek HER for citerede-men-manglende referencer]:")
+    out.append(f"  A1) Høj signal — efternavn slet ikke i bib ({len(A_missing)}):")
     out.append("\n".join(A_missing) if A_missing else "  - (ingen)")
-    out.append(f"  Lav signal — år-mismatch/co-forf.-støj ({len(A_yrmis)}): se fuld liste ved behov")
+    out.append(f"  A2) År-mismatch — efternavn i bib, men ikke DETTE år; muligt manglende værk/udgave (co-forf.-støj muligt) ({len(A_yrmis)}):")
+    out.append("\n".join(A_yrmis) if A_yrmis else "  - (ingen)")
     out.append(f"### B) Orphan-nøgler [LAV PRIO, tæller ikke]: {len(B)}")
     out.append(("  (%d — uciterede; \\nocite{*} trykker dem alligevel)"%len(B)) if B else "  - (ingen)")
-    out.append(f"\n- Reference-integritet: **{hard} hardt flag** (C+D); {len(A_missing)} A-højsignal + {len(B)} orphans til review.\n")
-    return hard
+    out.append(f"\n- Reference-integritet: **{hard} hardt flag** (C+D). ⚠ REVIEW: {len(A_missing)} høj-signal (A1) + {len(A_yrmis)} år-mismatch (A2) prosa-citationer uden bib-match — gennemgå §3.A. Bogen bruger tekstuelle forfatter-år-referencer + \\nocite{{*}} (ingen \\cite), så citerede-men-manglende referencer dukker KUN op her, ikke som hardt flag.\n")
+    return hard, len(A_missing), len(A_yrmis)
 
 
 def check_chapter_skeleton(src, out):
@@ -441,7 +442,8 @@ def main():
          ("(main.aux fundet — Figur/Tabel verificeret)\n" if aux else "(INGEN main.aux — Figur/Tabel sprunget over; kør biber-build først)\n")]
     p1=check_sequential(nums,fig,tab,out)
     p2=check_refs(src,titles,figset,tabset,out)
-    p3=check_bib_integrity(src,a.bib,out) if os.path.exists(a.bib) else 0
+    p3t=check_bib_integrity(src,a.bib,out) if os.path.exists(a.bib) else (0,0,0)
+    p3,rev_hi,rev_yr=p3t
     if not os.path.exists(a.bib): out.append("## 3. Reference-integritet\n- (--bib ikke fundet; sprunget over)\n")
     p4=check_chapter_skeleton(src,out)
     extra=[f for f in (a.register,a.appendix) if f and os.path.exists(f)]
@@ -454,8 +456,11 @@ def main():
             except OSError: pass
     p7=check_star_headings(struct,out)
     total=p1+p2+p3+p4+p5+p6+p7
+    review=rev_hi+rev_yr
     out.append(f"\n## Konklusion\n{'RENT ✓ — 0 afvigelser.' if total==0 else f'{total} punkter til gennemgang (numre/henvisninger: '+str(p1+p2)+', reference-integritet: '+str(p3)+', kapitel-skabelon: '+str(p4)+', typeløse box-pointere: '+str(p5)+', afsnits-henvisninger: '+str(p6)+', chapter*-headers: '+str(p7)+').'}")
+    if review:
+        out.append(f"\n⚠ **REVIEW (tæller ikke som flag):** {rev_hi} høj-signal + {rev_yr} år-mismatch prosa-citationer uden bib-match — se §3.A. \"0 flag\" udelukker IKKE citerede-men-manglende referencer; gennemgå §3.A.")
     open(a.out,'w',encoding='utf-8').write("\n".join(out))
-    print(f"Rapport skrevet: {a.out}  ({total} flag)")
+    print(f"Rapport skrevet: {a.out}  ({total} flag" + (f"; ⚠ {review} §3.A review-kandidater — se rapport)" if review else ")"))
 
 if __name__=='__main__': main()

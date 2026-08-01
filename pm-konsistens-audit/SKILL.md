@@ -100,6 +100,15 @@ review-kandidater der IKKE fælder "RENT ✓". Scriptet deaccenter prosaen (ö�
 fjerner genitiv-'s, fjerner LaTeX-kommentarer, og filtrerer via en stopliste for at dæmpe
 falske positiver — men A-listen kræver altid menneskelig filtrering.
 
+**v0.9.2 (2026-07-24) — review-synlighed (så "0 flag" ikke vildleder).** Erfaring: en operatør
+læste kun "0 flag" (harde C+D) og overså §3.A-review-listen, hvor 7 citerede-men-manglende
+referencer i praksis lå (fx Dutton/Dukerich/Harquail 1994, Harris & Schaubroeck 1988, Aguinis/Joo/
+Gottfredson 2011; + år-mismatch Bol 2011, Buckingham & Goodall 2019). Rettelser: (1) A2-år-mismatch-
+listen skrives nu FULDT ud i rapporten (før: "se fuld liste ved behov" — dér lå Bol/Goodall skjult);
+(2) terminal-output og Konklusion viser nu eksplicit antal §3.A-review-kandidater, med påmindelse om
+at bogen bruger tekstuelle forfatter-år-refs + `\nocite{*}` (ingen `\cite`), så citerede-men-manglende
+referencer KUN dukker op i §3.A, aldrig som hardt flag. Ingen ændring i, hvad der tælles som flag.
+
 **v0.9.1 (2026-07-24) — A-liste-støjreduktion.** Stoplisten `_NOISE` er udvidet med
 struktur-navigations-ord (Section/Afsnit/Figur/Tabel/Kapitel/Appendiks) og tidsskrift-/
 titel-ord (Management/Appraisal/Review/…), fordi parentes-med-årstal-regexen ellers
