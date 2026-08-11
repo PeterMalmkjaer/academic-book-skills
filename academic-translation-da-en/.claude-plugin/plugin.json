@@ -1,0 +1,9 @@
+{
+  "name": "academic-translation-da-en",
+  "version": "0.1",
+  "description": "Craft-level workflow for translating Danish academic books into English: decision log, termbase/anchor sign-off, per-section workflow, citation fidelity as a hard rule.",
+  "author": {
+    "name": "Peter Malmkjaer"
+  },
+  "homepage": "https://github.com/PeterMalmkjaer/academic-book-skills"
+}

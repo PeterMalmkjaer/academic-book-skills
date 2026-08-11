@@ -1,0 +1,9 @@
+{
+  "name": "academic-danish-engagement-audit",
+  "version": "1.0",
+  "description": "Rapportérbar læse-engagement-score for dansk akademisk prosa med registerbevidste anbefalinger. Måler kun; ingen dekorative virkemidler (seductive details skader læring).",
+  "author": {
+    "name": "Peter Malmkjaer"
+  },
+  "homepage": "https://github.com/PeterMalmkjaer/academic-book-skills"
+}

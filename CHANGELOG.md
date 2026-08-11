@@ -3,6 +3,36 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [1.0.0] — 2026-08-11
+
+### Added
+- **The article's full editing/audit skill chain (11 skills)** as a publication snapshot, per
+  the Data and tool availability statement of *Writing a Scholarly Book with AI*:
+  `akademisk-tekstaudit` (1.2), `academic-english-text-audit` (1.2),
+  `academic-translation-da-en` (0.1), `academic-danish-klarsprog`,
+  `academic-danish-consistency`, `academic-english-narrative`,
+  `academic-english-consistency`, `academic-danish-ai-tell-audit`,
+  `academic-english-ai-tell-audit`, `academic-danish-engagement-audit`,
+  `academic-english-engagement-audit`. All registered in the plugin marketplace.
+  Development homes remain the companion repos; the copies here are the cited versions.
+
+### Fixed
+- `pm-konsistens-audit/.claude-plugin/plugin.json` version bumped 0.9.0 → 0.9.2 (the 0.9.1 and
+  0.9.2 code changes were already committed on 22 July but the plugin manifest was not bumped).
+
+## [0.9.2] — 2026-07-22
+
+### Changed
+- `pm-konsistens-audit`: **§3.A review candidates are now surfaced in full** so a "0 flags"
+  summary cannot hide cited-but-missing references — the A2 year-mismatch list is written out
+  (in the PM case this exposed Bol 2011 and Buckingham & Goodall 2019, which had been hidden
+  behind an aggregated count). (Commit 3305f87.)
+
+## [0.9.1] — 2026-07-22
+
+### Fixed
+- `pm-konsistens-audit`: §3 A-list false-positive reduction. (Commit f519b3e.)
+
 ## [0.9.0] — 2026-07-22
 
 ### Added

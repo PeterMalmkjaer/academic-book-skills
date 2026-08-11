@@ -1,0 +1,9 @@
+{
+  "name": "academic-english-text-audit",
+  "version": "1.2",
+  "description": "Evidence-based quality audit of English academic prose — 5 dimensions, anchored 0–4 rubric, confidence bands and verbatim evidence per score. Measures and flags; never rewrites.",
+  "author": {
+    "name": "Peter Malmkjaer"
+  },
+  "homepage": "https://github.com/PeterMalmkjaer/academic-book-skills"
+}

@@ -1,0 +1,168 @@
+#!/usr/bin/env python3
+"""
+scan_da.py — deterministisk, LÆS-KUN konsistens-scanner for academic-danish-consistency.
+
+Redigerer ALDRIG kildefiler og BESLUTTER intet. Producerer objektive tal og
+linjeplacerede hits, der frø-sætter stilark-beslutninger (Fase 1) og kandidat-
+afvigelser (Fase 3). LLM-laget bekræfter beskyttet-status og dømmekald.
+
+Brug:
+    python scan_da.py --input <mappe-eller-glob> [--out rapport.md] [--log KOERSELSLOG.md]
+                      [--ext .tex,.md,.txt]
+"""
+from __future__ import annotations
+import argparse, glob, hashlib, os, re, sys
+from collections import Counter
+from datetime import datetime
+
+# --- danglish labels (engelsk i dansk strukturramme) ---
+DANGLISH_LABEL = {
+    "Figure (→ Figur)":  re.compile(r"\bFigure\s*\d"),
+    "Table (→ Tabel)":   re.compile(r"\bTable\s*\d"),
+    "Box (→ Boks)":      re.compile(r"\bBox\b"),
+}
+
+# engelske ord midt i dansk brødtekst (kurateret; ikke bevidste fagtermer)
+ENGELSK_I_DANSK = [
+    "measures", "performance", "output", "feedback", "targets", "benchmark",
+    "framework", "tool", "substitut", "tradeoff", "trade-off", "screening",
+    "gaming", "commitment", "discretion", "outside option", "back office",
+]
+ENG_RE = re.compile(r"\b(" + "|".join(re.escape(w) for w in ENGELSK_I_DANSK) + r")\b")
+
+# overskrifts-Title-Case (flere indholdsord med stort, ud over første) — proxy
+TITLE_CASE = re.compile(r"^\s*(\d+(\.\d+)*\s+)?([A-ZÆØÅ][a-zæøå]+\s+){1,}[A-ZÆØÅ][a-zæøå]+")
+
+REFS = {
+    "(afsnit x.y)":      re.compile(r"\(afsnit\s+\d"),
+    "(Afsnit x.y)":      re.compile(r"\(Afsnit\s+\d"),
+    "(§ x.y)":           re.compile(r"\(?§\s*\d"),
+    "(jf. afsnit ...)":  re.compile(r"\(jf\.\s+afsnit"),
+    "(se afsnit ...)":   re.compile(r"\(se\s+afsnit"),
+}
+TYPO = {
+    "punktum-decimal (→ komma?)": re.compile(r"\d+\.\d+"),
+    "komma-decimal":              re.compile(r"\d+,\d+"),
+    "danske anførselstegn »«":    re.compile(r"[»«„]"),
+    "engelske krøllede ‟”":       re.compile(r"[“”]"),
+    "lige anførselstegn":         re.compile(r"\""),
+    "dobbeltmellemrum":           re.compile(r"\S  +\S"),
+}
+PROTECTED_LINE = re.compile(
+    r"^\s*(Definition|Teoretisk|Teoriboks|Perspektiv|Perspektivbox|Case|Sammenfatning|"
+    r"Figur|Figure|Tabel|Table|Kilde)\b", re.I)
+PROTECTED_ENV = re.compile(
+    r"\\begin\{[^}]*(definition|teorem|teoretisk|perspektiv|case|sammenfatning|boks|box|"
+    r"quote|quotation|tcolorbox|mdframed|figure|table|verbatim|lstlisting|equation)[^}]*\}", re.I)
+PROTECTED_END = re.compile(
+    r"\\end\{[^}]*(definition|teorem|teoretisk|perspektiv|case|sammenfatning|boks|box|"
+    r"quote|quotation|tcolorbox|mdframed|figure|table|verbatim|lstlisting|equation)[^}]*\}", re.I)
+
+
+def sha(p):
+    h = hashlib.sha256()
+    with open(p, "rb") as f:
+        for c in iter(lambda: f.read(8192), b""):
+            h.update(c)
+    return h.hexdigest()[:12]
+
+
+def gather(inp, exts):
+    if os.path.isdir(inp):
+        out = []
+        for e in exts:
+            out += glob.glob(os.path.join(inp, "**", f"*{e}"), recursive=True)
+        return sorted(set(out))
+    return sorted(set(glob.glob(inp, recursive=True)))
+
+
+def scan(path):
+    counts = Counter()
+    hits = []
+    depth = 0
+    looks_heading = re.compile(r"^\s*(\d+(\.\d+)*\s+)?\S")
+    with open(path, encoding="utf-8", errors="replace") as f:
+        for i, raw in enumerate(f, 1):
+            line = raw.rstrip("\n")
+            if PROTECTED_ENV.search(line):
+                depth += 1
+            protected = depth > 0 or bool(PROTECTED_LINE.match(line))
+            if PROTECTED_END.search(line) and depth > 0:
+                depth -= 1
+            tag = "[beskyttet]" if protected else "[brødtekst]"
+
+            for name, pat in DANGLISH_LABEL.items():
+                n = len(pat.findall(line))
+                if n:
+                    counts[f"{name} {tag}"] += n
+                    hits.append((i, name, line.strip()[:60]))
+            if not protected:
+                for w in set(m.group(0) for m in ENG_RE.finditer(line)):
+                    counts[f"engelsk-i-dansk: {w} [brødtekst]"] += 1
+                    hits.append((i, f"engelsk-i-dansk: {w}", line.strip()[:60]))
+                # Title-Case-overskrift: kort linje (<= 9 ord) med flere store indholdsord
+                words = line.split()
+                if 1 < len(words) <= 9 and TITLE_CASE.match(line):
+                    caps = sum(1 for w in words if w[:1].isupper())
+                    if caps >= 3:
+                        counts["overskrift Title Case (→ sætningscase) [brødtekst]"] += 1
+                        hits.append((i, "overskrift Title Case", line.strip()[:60]))
+            for name, pat in {**REFS, **TYPO}.items():
+                n = len(pat.findall(line))
+                if n:
+                    counts[f"{name} {tag}"] += n
+    return counts, hits
+
+
+def main():
+    ap = argparse.ArgumentParser(description="Læs-kun dansk konsistens-scanner.")
+    ap.add_argument("--input", required=True)
+    ap.add_argument("--out", default="scan_da_rapport.md")
+    ap.add_argument("--log", default=None)
+    ap.add_argument("--ext", default=".tex,.md,.txt")
+    a = ap.parse_args()
+    exts = [e if e.startswith(".") else "." + e for e in a.ext.split(",")]
+    files = gather(a.input, exts)
+    if not files:
+        print(f"Ingen filer matchede: {a.input} ({exts})", file=sys.stderr)
+        return 1
+
+    total = Counter()
+    per = {}
+    for p in files:
+        c, h = scan(p)
+        per[p] = (c, h)
+        total.update(c)
+
+    ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    out = [f"# scan_da.py rapport — {ts}", "", f"Filer scannet: {len(files)}", "",
+           "## Bogdækkende totaler (brødtekst vs. beskyttet adskilt)", "",
+           "| Kategori | Antal |", "|---|---:|"]
+    for k in sorted(total):
+        out.append(f"| {k} | {total[k]} |")
+    out += ["", "## Pr. fil — brødtekst-hits (kandidater — bekræft før brug)"]
+    for p in files:
+        c, h = per[p]
+        out += ["", f"### {os.path.basename(p)}  (`{sha(p)}`)"]
+        bod = [x for x in h if "beskyttet" not in x[1]][:120]
+        if not bod:
+            out.append("- ingen brødtekst-hits")
+            continue
+        out += ["", "| linje | kategori | tekst |", "|---:|---|---|"]
+        for ln, cat, txt in bod:
+            safe = txt.replace("|", "\\|")
+            out.append(f"| {ln} | {cat} | {safe} |")
+
+    open(a.out, "w", encoding="utf-8").write("\n".join(out) + "\n")
+    print(f"Skrev {a.out} ({len(files)} filer)")
+    if a.log:
+        with open(a.log, "a", encoding="utf-8") as f:
+            f.write(f"\n- scan_da.py @ {ts}: {len(files)} filer; rapport={a.out}; "
+                    f"Figure={total.get('Figure (→ Figur) [brødtekst]', 0)} "
+                    f"Box={total.get('Box (→ Boks) [brødtekst]', 0)}\n")
+        print(f"Tilføjede resumé til {a.log}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

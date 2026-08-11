@@ -1,9 +1,14 @@
 # academic-book-skills
 
-Book-production skills for writing, structuring and typesetting academic textbooks and
-monographs in LaTeX — the **form / production** side of a book project. Companion to the
-content-editing families [`academic-english-skills`](https://github.com/PeterMalmkjaer/academic-english-skills)
-and [`academic-danish-skills`](https://github.com/PeterMalmkjaer/academic-danish-skills).
+Book-production **and** editing/audit skills for writing, structuring, quality-assuring and
+typesetting academic textbooks and monographs in LaTeX. The repo carries both the
+**form/production** skills and — as a publication snapshot accompanying the article
+*Writing a Scholarly Book with AI* — the full editing/audit **skill chain** the article
+documents (text audits, register lifts, consistency audits, AI-tell and engagement audits,
+and the DA→EN translation workflow). The content-editing families are developed in
+[`academic-english-skills`](https://github.com/PeterMalmkjaer/academic-english-skills) and
+[`academic-danish-skills`](https://github.com/PeterMalmkjaer/academic-danish-skills); the copies
+here are the versions used and cited in the article.
 
 ## Please read before you install
 
@@ -59,6 +64,17 @@ name. It is in this repo for reproducibility, not reuse.
 | `pm-bog` | DA | OPT-IN. Project-specific baseline for the Performance-Management textbook (chapter structure, build, box definitions, workflow). |
 | `pm-konsistens-audit` | DA | Numbering / float-continuity / cross-reference audit of a LaTeX book (fortløbende numre; dangling §/Boks/Case/Figur/Tabel-henvisninger; register- og appendiks-konsistens). Includes `scripts/audit_all.py`. |
 | `academic-source-verification` | DA | Source & citation verification (external truth) **plus a transparent, reproducible audit ledger** — an accountability instrument for publisher/reader. Three checks: reference correctness, retraction/reliability, claim–source fidelity. Produces/maintains the reference-audit ledger (provenance per source) + derives the in-book AI/source declaration. Companion to `pm-konsistens-audit` (which owns internal consistency + phantom/orphan detection). |
+| `akademisk-tekstaudit` | DA | Evidensbaseret kvalitetsaudit af danske akademiske tekster — 5 dimensioner, BARS-forankret 0–4-rubrik, konfidensbånd og tekstbelæg pr. score. Måler og flager; omskriver aldrig. |
+| `academic-english-text-audit` | EN | Evidence-based quality audit of English academic prose — 5 dimensions, anchored 0–4 rubric, confidence bands and verbatim evidence per score. Measures and flags; never rewrites. |
+| `academic-translation-da-en` | DA→EN | Craft-level workflow for translating Danish academic books into English: decision log, termbase/anchor sign-off, per-section workflow, citation fidelity as a hard rule. |
+| `academic-danish-klarsprog` | DA | Register- og klarsprogsløft for danske akademiske manuskripter via valgbare stilprofiler (LIX, nominal/verbalstil, anglicismer, sætningsrytme). Rører aldrig mening, tal eller citater. |
+| `academic-danish-consistency` | DA | Bogdækkende dansk house-style-konsistensaudit: udleder stilark og termbase fra kapitlerne og flager afvigelser — omskriver aldrig stiltiende. |
+| `academic-english-narrative` | EN | Register and narrative-voice editing for English academic manuscripts through selectable style presets calibrated against measurable features. Body prose only; never alters meaning, citations or numbers. |
+| `academic-english-consistency` | EN | Book-wide English house-style consistency audit: derives a style sheet and termbase from the chapters and flags deviations — never silently rewrites. |
+| `academic-danish-ai-tell-audit` | DA | Måler tætheden af LLM-stilmarkører i dansk akademisk prosa og anbefaler reduktioner, der respekterer tekstens egen stemme. Måler og flager — omskriver aldrig; ikke en AI-detektor. |
+| `academic-english-ai-tell-audit` | EN | Measures the density of LLM-overused style markers in English academic prose and recommends reductions that respect the text's own voice. Measures and flags — never rewrites; not an AI detector. |
+| `academic-danish-engagement-audit` | DA | Rapportérbar læse-engagement-score for dansk akademisk prosa med registerbevidste anbefalinger. Måler kun; ingen dekorative virkemidler (seductive details skader læring). |
+| `academic-english-engagement-audit` | EN | Reportable reading-engagement score for English academic prose with register-aware recommendations. Measures only; no decorative 'interest' (seductive details harm learning). |
 
 ## Pipeline ordering (read this first)
 

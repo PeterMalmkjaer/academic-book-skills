@@ -41,6 +41,83 @@
       "source": "./pm-bog",
       "description": "Opt-in project skill for one specific textbook (CBS Performance Management) — chapter map, LaTeX build, box definitions and known-good baseline facts. Published for reproducibility, not reuse: it will not be useful for your book. Invoke by name only.",
       "category": "productivity"
+    },
+    {
+      "name": "akademisk-tekstaudit",
+      "displayName": "Akademisk Tekstaudit (DA)",
+      "source": "./akademisk-tekstaudit",
+      "description": "Evidensbaseret kvalitetsaudit af danske akademiske tekster — 5 dimensioner, BARS-forankret 0–4-rubrik, konfidensbånd og tekstbelæg pr. score. Måler og flager; omskriver aldrig.",
+      "category": "productivity"
+    },
+    {
+      "name": "academic-english-text-audit",
+      "displayName": "Academic English Text Audit",
+      "source": "./academic-english-text-audit",
+      "description": "Evidence-based quality audit of English academic prose — 5 dimensions, anchored 0–4 rubric, confidence bands and verbatim evidence per score. Measures and flags; never rewrites.",
+      "category": "productivity"
+    },
+    {
+      "name": "academic-translation-da-en",
+      "displayName": "Academic Translation DA→EN",
+      "source": "./academic-translation-da-en",
+      "description": "Craft-level workflow for translating Danish academic books into English: decision log, termbase/anchor sign-off, per-section workflow, citation fidelity as a hard rule.",
+      "category": "productivity"
+    },
+    {
+      "name": "academic-danish-klarsprog",
+      "displayName": "Akademisk Dansk Klarsprog",
+      "source": "./academic-danish-klarsprog",
+      "description": "Register- og klarsprogsløft for danske akademiske manuskripter via valgbare stilprofiler (LIX, nominal/verbalstil, anglicismer, sætningsrytme). Rører aldrig mening, tal eller citater.",
+      "category": "productivity"
+    },
+    {
+      "name": "academic-danish-consistency",
+      "displayName": "Akademisk Dansk Konsistens",
+      "source": "./academic-danish-consistency",
+      "description": "Bogdækkende dansk house-style-konsistensaudit: udleder stilark og termbase fra kapitlerne og flager afvigelser — omskriver aldrig stiltiende.",
+      "category": "productivity"
+    },
+    {
+      "name": "academic-english-narrative",
+      "displayName": "Academic English Narrative",
+      "source": "./academic-english-narrative",
+      "description": "Register and narrative-voice editing for English academic manuscripts through selectable style presets calibrated against measurable features. Body prose only; never alters meaning, citations or numbers.",
+      "category": "productivity"
+    },
+    {
+      "name": "academic-english-consistency",
+      "displayName": "Academic English Consistency",
+      "source": "./academic-english-consistency",
+      "description": "Book-wide English house-style consistency audit: derives a style sheet and termbase from the chapters and flags deviations — never silently rewrites.",
+      "category": "productivity"
+    },
+    {
+      "name": "academic-danish-ai-tell-audit",
+      "displayName": "Akademisk Dansk AI-Tell-Audit",
+      "source": "./academic-danish-ai-tell-audit",
+      "description": "Måler tætheden af LLM-stilmarkører i dansk akademisk prosa og anbefaler reduktioner, der respekterer tekstens egen stemme. Måler og flager — omskriver aldrig; ikke en AI-detektor.",
+      "category": "productivity"
+    },
+    {
+      "name": "academic-english-ai-tell-audit",
+      "displayName": "Academic English AI-Tell Audit",
+      "source": "./academic-english-ai-tell-audit",
+      "description": "Measures the density of LLM-overused style markers in English academic prose and recommends reductions that respect the text's own voice. Measures and flags — never rewrites; not an AI detector.",
+      "category": "productivity"
+    },
+    {
+      "name": "academic-danish-engagement-audit",
+      "displayName": "Akademisk Dansk Engagement-Audit",
+      "source": "./academic-danish-engagement-audit",
+      "description": "Rapportérbar læse-engagement-score for dansk akademisk prosa med registerbevidste anbefalinger. Måler kun; ingen dekorative virkemidler (seductive details skader læring).",
+      "category": "productivity"
+    },
+    {
+      "name": "academic-english-engagement-audit",
+      "displayName": "Academic English Engagement Audit",
+      "source": "./academic-english-engagement-audit",
+      "description": "Reportable reading-engagement score for English academic prose with register-aware recommendations. Measures only; no decorative 'interest' (seductive details harm learning).",
+      "category": "productivity"
     }
   ]
 }

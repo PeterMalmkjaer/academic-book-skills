@@ -1,0 +1,9 @@
+{
+  "name": "academic-english-engagement-audit",
+  "version": "1.0",
+  "description": "Reportable reading-engagement score for English academic prose with register-aware recommendations. Measures only; no decorative 'interest' (seductive details harm learning).",
+  "author": {
+    "name": "Peter Malmkjaer"
+  },
+  "homepage": "https://github.com/PeterMalmkjaer/academic-book-skills"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "academic-danish-ai-tell-audit",
+  "version": "1.0",
+  "description": "Måler tætheden af LLM-stilmarkører i dansk akademisk prosa og anbefaler reduktioner, der respekterer tekstens egen stemme. Måler og flager — omskriver aldrig; ikke en AI-detektor.",
+  "author": {
+    "name": "Peter Malmkjaer"
+  },
+  "homepage": "https://github.com/PeterMalmkjaer/academic-book-skills"
+}

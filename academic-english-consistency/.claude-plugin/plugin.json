@@ -1,0 +1,9 @@
+{
+  "name": "academic-english-consistency",
+  "version": "1.0",
+  "description": "Book-wide English house-style consistency audit: derives a style sheet and termbase from the chapters and flags deviations — never silently rewrites.",
+  "author": {
+    "name": "Peter Malmkjaer"
+  },
+  "homepage": "https://github.com/PeterMalmkjaer/academic-book-skills"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "academic-english-ai-tell-audit",
+  "version": "1.0",
+  "description": "Measures the density of LLM-overused style markers in English academic prose and recommends reductions that respect the text's own voice. Measures and flags — never rewrites; not an AI detector.",
+  "author": {
+    "name": "Peter Malmkjaer"
+  },
+  "homepage": "https://github.com/PeterMalmkjaer/academic-book-skills"
+}
