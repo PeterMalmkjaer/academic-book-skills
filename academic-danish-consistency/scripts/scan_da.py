@@ -30,6 +30,17 @@ ENGELSK_I_DANSK = [
 ]
 ENG_RE = re.compile(r"\b(" + "|".join(re.escape(w) for w in ENGELSK_I_DANSK) + r")\b")
 
+# kalke-/term-konsistens: dansk oversættelseslån ↔ engelsk fagterm. Flag den danske kalke-
+# form som review-kandidat (LLM/forfatter vælger ÉN konsistent form: engelsk term ELLER en
+# ren dansk term). Generel, disciplin-agnostisk seed-liste — udvid pr. projekt-stilark.
+# Matcher også bøjninger ("rammeværker", "rammeværkets"). Fanger IKKE selve den engelske
+# term (den tælles separat via totaler, så et split bliver synligt).
+KALKE = {
+    "rammeværk": "framework",
+    "vokabular":  "vocabulary (evt. begrebsapparat/ordforråd)",
+}
+KALKE_RE = re.compile(r"\b(" + "|".join(KALKE) + r")[a-zæøå]*\b", re.I)
+
 # overskrifts-Title-Case (flere indholdsord med stort, ud over første) — proxy
 TITLE_CASE = re.compile(r"^\s*(\d+(\.\d+)*\s+)?([A-ZÆØÅ][a-zæøå]+\s+){1,}[A-ZÆØÅ][a-zæøå]+")
 
@@ -40,6 +51,12 @@ REFS = {
     "(jf. afsnit ...)":  re.compile(r"\(jf\.\s+afsnit"),
     "(se afsnit ...)":   re.compile(r"\(se\s+afsnit"),
 }
+# genitiv-apostrof (RO § 21): egennavn tager -s UDEN apostrof; -s/-x/-z: apostrof uden s;
+# punktumløse forkortelser tager 's (korrekt). GEN_NAME kræver lille bogstav som 2. tegn,
+# så all-caps-forkortelser (EU's, USA's, IBM's) IKKE fanges som anglicisme.
+GEN_NAME = re.compile(r"\b([A-ZÆØÅ][a-zæøå][A-Za-zÆØÅæøå]*)['’]s\b")
+GEN_ABBR = re.compile(r"\b[A-ZÆØÅ]{2,}['’]s\b")
+GEN_BRAND = {"McDonald"}  # varemærke: apostrof er en del af navnet
 TYPO = {
     "punktum-decimal (→ komma?)": re.compile(r"\d+\.\d+"),
     "komma-decimal":              re.compile(r"\d+,\d+"),
@@ -111,6 +128,24 @@ def scan(path):
                 n = len(pat.findall(line))
                 if n:
                     counts[f"{name} {tag}"] += n
+            # genitiv-apostrof: flag egennavns-kandidater; forkortelses-'s tælles som korrekt.
+            # LLM-laget bekræfter undtagelser (eponym "X's Law", referencetitler, "Cohen's d").
+            for m in GEN_NAME.finditer(line):
+                if m.group(1) in GEN_BRAND:
+                    continue
+                cat = f"genitiv-apostrof egennavn (→ uden apostrof) {tag}"
+                counts[cat] += 1
+                hits.append((i, cat, line.strip()[:60]))
+            na = len(GEN_ABBR.findall(line))
+            if na:
+                counts[f"genitiv 's på forkortelse (korrekt) {tag}"] += na
+            # kalke-/term-konsistens: flag dansk kalke-form (review-kandidat)
+            for m in KALKE_RE.finditer(line):
+                base = m.group(1).lower()
+                eng = KALKE.get(base, "?")
+                cat = f"kalke-kandidat: {base} (← {eng}) {tag}"
+                counts[cat] += 1
+                hits.append((i, cat, line.strip()[:60]))
     return counts, hits
 
 

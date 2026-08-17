@@ -11,6 +11,19 @@ dér tjekkes kun *formatet* af rammen.
 - bindestreg i sammensætninger med tal/forkortelser/engelske led ("AI-system",
   "PM-design", "ChatGPT-output")
 - fremmedord-stavning hvor RO tillader variant (vælg én)
+- **genitiv-apostrof (RO § 21):** dansk ejefald = `-s` UDEN apostrof, også for
+  udenlandske egennavne — afgøres af sidste **bogstav**, ikke lyd ("Deloittes",
+  "Kotters", "Lazears"). Navne på **-s/-x/-z**: apostrof UDEN ekstra s ("Netflix'",
+  "Marx'"). Punktumløse **forkortelser** tager `'s` og er KORREKTE ("EU's", "USA's",
+  "AI's") — flag dem ikke. Anglo-genitiv `Navn's` på egennavn er en anglicisme → flag.
+  **Undtagelser (flag ikke / behold):** (a) fast eponym-term hvor "X's Law" ER navnet
+  ("Goodhart's Law", "Campbell's Law", "Moore's Law") — behold engelsk, medmindre bogen
+  ellers fordansker konsekvent; (b) artikeltitler i referencer/"Videre Læsning"
+  ("…Amazon's Warehouses", "…Lincoln Electric's Harsh Lessons") — beskyttet indhold;
+  (c) statistisk notation ("Cohen's d", "Student's t"); (d) varemærker hvor apostroffen
+  er en del af navnet ("McDonald's"); (e) engelske citater. Bemærk register: essayistisk
+  prosa (forord/efterskrift) kan bevidst fordanske en eponym til "Goodharts lov" selvom
+  kapitlerne bruger termen — rapportér som split, tving ikke.
 
 ## 2. Komma (Dansk Sprognævn)
 - **grammatisk komma** (med startkomma) vs. **nyt komma** (uden startkomma) — vælg ÉT
@@ -28,6 +41,14 @@ dér tjekkes kun *formatet* af rammen.
 - **Verbede anglicismer** ("crowde … ud", "processere", "applicere", "redesigne") er en
   *kvalitets*-sag → henvises til `academic-danish-klarsprog`; her tjekkes kun, om de
   bruges *konsistent*, hvis de bevidst beholdes.
+- **Kalke-/term-konsistens (engelsk term ↔ dansk oversættelseslån):** når ét begreb
+  optræder både som engelsk fagterm OG som dansk kalke, er det en inkonsistens → vælg ÉN
+  form. Typisk mønster: bogen bruger den engelske term N gange, men falder enkelte steder
+  tilbage på en tung kalke. Kendte kandidater (udvid pr. projekt): "rammeværk" (← framework),
+  "vokabular" (← vocabulary; ofte bedre: begrebsapparat/ordforråd). Flag den danske kalke
+  som review-kandidat; beslut i Fase 1, om termen holdes engelsk konsekvent, eller en ren
+  dansk term vælges. (Selve dommen om, hvorvidt en kalke er *klodset*, hører i klarsprog-
+  søsteren; her håndhæves kun ÉN konsistent form.)
 
 ## 4. Tal, enheder, intervaller
 - **decimalkomma** (dansk: "3,7 %") vs. punktum — vælg ét; flag punktum-decimaler
