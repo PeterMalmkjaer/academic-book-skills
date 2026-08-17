@@ -58,6 +58,14 @@ recommend one canonical form. Never apply a rule inside protected content (see
 - numbered vs unnumbered sections; numbering depth
 - box title format: `Definition 17.1: Title` punctuation and casing, consistent
   across all boxes of a type
+- **box ENVIRONMENT consistency (LaTeX):** a *numbered* pedagogical box must not use an
+  environment otherwise reserved for *unnumbered* structural boxes (e.g. the chapter-opening
+  "What this chapter is about" box). Classic bug: "Perspective Box 17.1" set with
+  `\begin{perspectivebox}` (the intro environment) instead of the numbered perspective-box
+  environment — invisible in the text (the title is correct), only the environment is wrong.
+  `scan.py` flags any environment that MIXES numbered and unnumbered boxes. NB: one label may
+  legitimately use several environments (discipline colouring, e.g. Theory Box as
+  theorybox/psychbox/socbox) — that is NOT an error.
 - "Learning objectives", "Summary", "Discussion Questions" header wording consistent
 
 ## 8. Mechanical hygiene (high-confidence, body prose)

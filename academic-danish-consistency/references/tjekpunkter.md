@@ -61,6 +61,13 @@ dér tjekkes kun *formatet* af rammen.
   (danglish i strukturlabels er et hyppigt, højværdifuldt fund)
 - boks-titelformat ("Definition 16.1: …", "Teoriboks 16.1: …") — ens for hver bokstype
 - bokstype-navne ensartede ("Teoretisk Box" vs "Teoriboks" vs "Boks" — vælg ét)
+- **boks-MILJØ-konsistens (LaTeX):** en *nummereret* pædagogisk boks må ikke bruge et
+  miljø, der ellers er reserveret til *unummererede* strukturbokse (fx kapitlets intro-boks).
+  Klassisk fejl: "Perspektivboks 17.1" sat med `\begin{perspectivebox}` (intro-miljøet, sort
+  m. hvid skrift) i stedet for det nummererede perspektivboks-miljø. Denne fejl er USYNLIG i
+  teksten (overskriften er korrekt) — kun miljøet er forkert. `scan_da.py` flager miljøer, der
+  BLANDER nummererede og unummererede bokse. NB: samme overskrift kan LEGITIMT bruge flere
+  miljøer (disciplin-farvning, fx Teoriboks som theorybox/psychbox/socbox) — det er IKKE en fejl.
 
 ## 6. Overskrifter (dansk konvention)
 - **sætningscase** (kun stort begyndelsesbogstav + proprier), IKKE engelsk Title Case

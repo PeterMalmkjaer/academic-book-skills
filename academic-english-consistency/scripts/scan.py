@@ -87,6 +87,26 @@ PROTECTED_LINE = re.compile(
     re.I,
 )
 
+# box-environment consistency: a NUMBERED pedagogical box (Theory Box / Perspective Box /
+# Case / Definition N.N) must not use an environment otherwise reserved for UNNUMBERED
+# structural boxes (e.g. the chapter-opening "What this chapter is about" box). Catches the
+# exact bug of a numbered box set with the intro-box environment. NOTE: one box label may
+# LEGITIMATELY use several environments (discipline colouring, e.g. Theory Box as
+# theorybox/psychbox/socbox), so we do NOT check label->environment; instead we flag any
+# single environment that MIXES numbered and unnumbered boxes. Only *box environments.
+BOX_ANY = re.compile(r"\\begin\{(\w*box\w*)\}\s*\[([^\]]*)\]")
+
+
+def collect_boxes(path: str):
+    out = []
+    with open(path, "r", encoding="utf-8", errors="replace") as f:
+        for i, raw in enumerate(f, 1):
+            m = BOX_ANY.search(raw)
+            if m:
+                env, title = m.group(1), m.group(2)
+                out.append((env, bool(re.search(r"\d", title)), i, title.strip()[:50]))
+    return out
+
 
 def sha256(path: str) -> str:
     h = hashlib.sha256()
@@ -170,6 +190,28 @@ def main() -> int:
     lines.append("|---|---:|")
     for k in sorted(total):
         lines.append(f"| {k} | {total[k]} |")
+    lines.append("")
+
+    # box-environment consistency: flag an environment that MIXES numbered + unnumbered boxes
+    env_roles: dict = {}
+    for path in files:
+        for env, numbered, ln, title in collect_boxes(path):
+            d = env_roles.setdefault(env, {"num": [], "unnum": []})
+            d["num" if numbered else "unnum"].append((os.path.basename(path), ln, title))
+    lines.append("## Box-environment consistency (numbered vs. unnumbered usage)")
+    anomalies = False
+    for env in sorted(env_roles):
+        num, unnum = env_roles[env]["num"], env_roles[env]["unnum"]
+        if num and unnum:
+            anomalies = True
+            minority = num if len(num) <= len(unnum) else unnum
+            role = "numbered" if minority is num else "unnumbered"
+            lines.append(f"- `{env}` is used BOTH numbered ({len(num)}x) and unnumbered "
+                         f"({len(unnum)}x) --- check the minority ({role}):")
+            for fn, ln, title in minority:
+                lines.append(f"    - {fn}:{ln}  [{title}]")
+    if not anomalies:
+        lines.append("- no anomalies (no box environment mixes numbered and unnumbered boxes)")
     lines.append("")
 
     lines.append("## Per-file body-prose hits (candidates only — verify before use)")
