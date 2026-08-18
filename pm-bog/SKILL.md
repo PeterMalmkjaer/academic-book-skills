@@ -355,3 +355,22 @@ Bokstitler og registerets Navn-kolonne skrives i **sætningscase**: kun første 
 
 **Reference-integritet — LÆS pm-konsistens-audit §3.A, ikke kun "0 flag".**
 Bogen bruger tekstuelle forfatter-år-referencer + `\nocite{*}` og ingen `\cite`. Derfor kan et citeret-men-manglende værk ALDRIG blive et hardt flag — det dukker kun op i **§3.A review-listen** (A1 høj-signal = efternavn slet ikke i bib; A2 = efternavn i bib, men ikke dette år → muligt manglende udgave). Kør `audit_all.py --bib references.bib` og gennemgå §3.A. (7 sådanne huller blev tilføjet 2026-07-24: Dutton/Dukerich/Harquail 1994, Paulhus & Williams 2002, Harris & Schaubroeck 1988, Aguinis/Joo/Gottfredson 2011, Bol 2011, Buckingham & Goodall 2019, Zimmerman 2020.)
+
+## 16. Baseline-opdateringer 2026-08-18 (kvalitetsgate afsluttet)
+
+- **EU AI Act:** Digital Omnibus-forordningen (EU) 2026/1744 (OJ 24/7-2026, i kraft 27/7-2026)
+  udskyder Annex III high-risk-fristen til 2. DECEMBER 2027 (Annex I: aug 2028). Bogens
+  Perspektivboks 17.3 afspejler dette. Rekruttering = Annex III punkt 4(a); beslutninger/
+  monitorering/evaluering = 4(b). Platformsarbejdsdirektivet (2024/2831) er indarbejdet i
+  kap17's afsluttende opgave.
+- **Float-konvention (NY, bogdækkende beslutning D1):** ALLE figurer/tabeller skal refereres
+  i brødtekst med \ref (aldrig hårdkodet nummer). Deterministisk tjek: pm-konsistens-audit §8.
+  Kap06/09/13/14/15 er bragt i overensstemmelse (14 henvisninger); kap01-05,07,08,10,11,16
+  havde pr. 2026-08-18 ~28 ureferede floats til senere beslutning.
+- **Citat-attributioner (fastlagt):** "When a measure becomes a target..." er STRATHERNS
+  formulering (1997) — attributeret i kap03+kap09. K&D (1996)-definitionen citeres ordret
+  ("(an) external agent(s)..."). Drucker-epigrafen (kap09) bruger 1963-ordlyden ("surely...what").
+- **Typografi (bekræftet i build):** \captionsetup{font=small, labelfont=bf} globalt;
+  nummererede Perspektivbokse = psychbox (perspectivebox KUN til kapitlernes intro-boks).
+- **Kvalitetsgate-artefakter:** audit_reports/ (7 kapitelrapporter + SAMLET_TOPLISTE +
+  KORREKTUR_ARK), PROJECT_LOG §CLXXXVIII-CXC, EN-spejl i UDGIVELSES_ERFARINGER §9-tillæg 12-14.
