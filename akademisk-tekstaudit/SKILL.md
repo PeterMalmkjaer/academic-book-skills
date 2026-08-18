@@ -146,6 +146,26 @@ Begrundelsen står i Designhistorikken (v1.3): begge fundklasser (uforankrede eg
 og fraværende ankertermer) blev fundet i praksis af et frit gennemsyn, EFTER at to fulde
 rubrik-kørsler havde overset dem.
 
+### Trin 2d — AI-indsættelses-tjek (frisk indsat tekst)
+
+Er dele af teksten netop tilføjet eller omskrevet med AI-assistance (forfatteren oplyser
+hvilke, eller versionsnoten viser det), auditeres NETOP disse passager særskilt — ud over
+den almindelige scoring — for tre fundklasser, som samlet set er signaturen for frisk
+AI-produceret prosa i en ellers gennemarbejdet tekst:
+
+1. **Naboafsnits-ekko:** ord- og vendingsgentagelser på tværs af den nye passage og dens
+   nabopassager (samme adjektiv, samme verbalfrase, samme rammekonstruktion inden for en
+   side). Den slags ekko opstår, når ny tekst genereres med nabopassagen i kontekst.
+2. **Metafor-rester fra AI-registeret:** billedsprog, der ikke hører hjemme i tekstens
+   etablerede register (fx procesmetaforik som "destilleret", "strøm af", personificeringer
+   som viden der "bor"). Sammenhold med tekstens egen metaforpraksis (M-dimensionen).
+3. **Idiomatisk hjemmel:** konstruktioner, der er grammatisk mulige, men ikke idiomatiske
+   på dansk (fx skæve præpositionsforbindelser). Flag med forslag om naturligt fagsprog.
+
+Tjekket er flag-mode uden selvstændig score. Det erstatter ikke ai-tell-audit (som måler
+tæthed over hele teksten) — det er en målrettet stikprøve dér, hvor risikoen er størst:
+i det senest indsatte. Begrundelse i Designhistorikken (v1.4).
+
 ### Trin 3 — Beregn
 
 - Kriteriescore s ∈ {0,1,2,3,4}; kriterievægte w (default lige) fra genreprofilen.
@@ -201,6 +221,20 @@ Fire elementer ud over kriterievurderingerne:
   skal invitere til efterprøvning, og det skal fremgå både i indledningsblokken og i
   metodeboksen.
 
+## Samspil med søster-skills (batteri-anbefaling)
+
+Ved AI-assisterede manuskripter bør auditten ikke stå alene. Anbefal — og notér i
+metodeboksen, om det er sket — et batteri med arbejdsdeling dokumenteret i praksis:
+den forankrede rubrik fanger det mekanisk verificerbare og det, der kræver dømmekraft
+inden for rubrikkens spørgsmål; **ai-tell-audit** måler prosarytme og LLM-stilmarkører
+(fx em-dash-tæthed), som rubrikken ikke spørger om; **engagement-audit** vurderer narrativ
+bue og læsemotivation; et frit kryds-model-review supplerer med det strategisk-metodologiske
+blik, ingen rubrik kan planlægge. I casen, skillen er udviklet på, blev 5 af 30 eksterne
+reviewfund dækket af søster-skills, der fandtes, men ikke var kørt — batteriet er altså
+ikke en luksus, men lukningen af en dokumenteret fundklasse. Handoff-pakken (Trin 5) kan
+desuden anbefale, at påstandstabellen (S4) publiceres som element i selve teksten — i
+artikel-casen blev den til manuskriptets egen evidenstabel.
+
 ## Grænser
 
 - Aflever aldrig en score uden belæg uden at mærke den som skøn.
@@ -245,6 +279,17 @@ Fire elementer ud over kriterievurderingerne:
   (*human-in-the-loop*, *quality by design*, *poka-yoke* m.fl.), hvis indsættelse løftede
   tekstens faglige forankring markant. Lærdom som v1.2: rubrikken ser kun, hvad den spørger
   om — fravær af noget forventeligt kræver et eksplicit trin, der spørger til fraværet.
+- **v1.4 (august 2026):** (a) AI-indsættelses-tjek (Trin 2d) tilføjet, efter at en sprogtest
+  af netop AI-indsatte passager i artikel-casen fandt syv fund i én passage (metafor-rester,
+  naboafsnits-ekko, uidiomatisk konstruktion), som hverken rubrikken eller de deterministiske
+  fejninger spørger om — fundklassen er lokaliseret (frisk indsat tekst), ikke tekstdækkende,
+  og kræver derfor en målrettet stikprøve. (b) Genreprofilen "tidsskriftartikel (empirisk)"
+  udvidet med metodeblok og S4-skærpelser (kalibrering.md), efter at en systematisk
+  gap-analyse af 30 eksterne reviewfund mod skillens kriterier viste, at 6 reelle gaps lå
+  samlet i metodisk efterprøvelighed (søgedokumentation, operationalisering,
+  design-eksplicitering, selvvaliderings-afgrænsning, restfejls-dækning) — en dimension,
+  rubrikken ikke havde for empiriske artikler. (c) Batteri-anbefalingen gjort eksplicit
+  (5 af 30 eksterne fund dækkedes af søster-skills, der ikke var kørt).
 - **v1.5 (august 2026):** Kildevariations-regel for case-fakta tilføjet (Grænser), efter at
   PM-bogens kvalitetsgate viste et falsk positiv: en auditor flagede Enrons 20/70/10-fordeling
   som GE-transplantat, men samtidig presse (TIME, 2001) dokumenterer netop denne inddeling for

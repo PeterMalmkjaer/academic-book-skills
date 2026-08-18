@@ -151,6 +151,29 @@ The rationale is in the design history (v1.3): both finding classes (unanchored 
 and absent anchor terms) were found in practice by a free-form read-through AFTER two full
 rubric runs had missed them.
 
+### Step 2d — AI-insertion check (freshly inserted text)
+
+If parts of the text have just been added or rewritten with AI assistance (the author says
+which, or the version note shows it), audit PRECISELY those passages separately — beyond
+the ordinary scoring — for three finding classes that together are the signature of fresh
+AI-produced prose inside an otherwise worked-through text:
+
+1. **Adjacent-paragraph echo:** word and phrase repetition across the new passage and its
+   neighbours (the same adjective, the same verb phrase, the same framing construction
+   within a page). Such echo arises when new text is generated with the neighbouring
+   passage in context.
+2. **Metaphor residue from the AI register:** imagery foreign to the text's established
+   register (e.g. process metaphors such as "distilled", "a stream of", personifications
+   such as knowledge that "lives" somewhere). Compare against the text's own metaphor
+   practice (dimension M).
+3. **Idiomatic warrant:** constructions that are grammatically possible but not idiomatic
+   in the target language (e.g. skewed prepositional phrases). Flag with a plain-register
+   alternative.
+
+The check is flag-mode with no score of its own. It does not replace ai-tell-audit (which
+measures density across the whole text) — it is a targeted spot-check where the risk is
+highest: in the most recently inserted material. Rationale in the design history (v1.4).
+
 ### Step 3 — Compute
 
 - Criterion score s ∈ {0,1,2,3,4}; criterion weights w (default equal) from the genre profile.
@@ -207,6 +230,21 @@ Four elements beyond the criterion assessments:
   misread — the report must invite verification, stated both in the opening block and in
   the method box.
 
+## Interplay with sister skills (battery recommendation)
+
+For AI-assisted manuscripts the audit should not stand alone. Recommend — and note in the
+methods box whether it happened — a battery with a division of labour documented in
+practice: the anchored rubric catches the mechanically verifiable and whatever requires
+judgement within the rubric's questions; **ai-tell-audit** measures prose rhythm and LLM
+style markers (e.g. em-dash density) the rubric never asks about; **engagement-audit**
+assesses narrative arc and reader motivation; a free-form cross-model review adds the
+strategic-methodological eye no rubric can plan for. In the case this skill was developed
+on, 5 of 30 external review findings were covered by sister skills that existed but had
+not been run — the battery is not a luxury; it closes a documented finding class. The
+handoff package (Step 5) may additionally recommend publishing the claims table (S4) as
+an element of the text itself — in the article case it became the manuscript's own
+evidence table.
+
 ## Boundaries
 
 - Never deliver a score without evidence without marking it as an estimate.
@@ -219,12 +257,11 @@ Four elements beyond the criterion assessments:
   D findings are phrased as observation plus a question to the author, never as a
   prescription of stance. D is opt-in, unscored by default, confidence-capped at medium,
   and weighted ≤ 0.05 in scored mode.
-
-
 - **Case facts about real companies/events:** NEVER flag as "error" merely because one
   secondary work gives different numbers — secondary literature often varies. Check
   contemporaneous primary/press sources, and phrase the finding as "sources vary — verify",
   citing the specific counter-source and its year. "Differs from one source" is not "wrong".
+
 
 ## Design history (dimension choices MUST be justified here)
 
@@ -257,7 +294,18 @@ Four elements beyond the criterion assessments:
   markedly strengthened the text's scholarly grounding. Same lesson as v1.2: the rubric only
   sees what it asks about — the absence of something expected requires an explicit step that
   asks about absence.
-- Future inclusion or exclusion of dimensions must be justified in this section.
+- **v1.4 (August 2026):** (a) AI-insertion check (Step 2d) added after a language pass on
+  freshly AI-inserted passages in the article case found seven findings in one passage
+  (metaphor residue, adjacent-paragraph echo, unidiomatic construction) that neither the
+  rubric nor the deterministic sweeps ask about — the finding class is localised (freshly
+  inserted text), not text-wide, and therefore needs a targeted spot-check. (b) The genre
+  profile "journal article (empirical)" extended with a methods block and S4 sharpenings
+  (calibration.md), after a systematic gap analysis of 30 external review findings against
+  the skill's criteria showed 6 genuine gaps clustered in methodological verifiability
+  (search documentation, operationalisation, design explication, self-validation
+  delimitation, residual-error coverage) — a dimension the rubric lacked for empirical
+  articles. (c) The battery recommendation made explicit (5 of 30 external findings were
+  covered by sister skills that had not been run).
 - **v1.5 (August 2026, mirrored from Danish sister):** Source-variation rule for case facts
   added (Boundaries), after the PM-book quality gate produced a false positive: an auditor
   flagged Enron's 20/70/10 split as a GE transplant, but contemporaneous press (TIME, 2001)
@@ -266,3 +314,4 @@ Four elements beyond the criterion assessments:
   distinguished from "wrong"; the flag phrasing is "sources vary — verify". The same gate
   confirmed the value of the F1/F4 criteria (14 unreferenced floats found) — that check is now
   also deterministic in pm-konsistens-audit (§8).
+- Future inclusion or exclusion of dimensions must be justified in this section.

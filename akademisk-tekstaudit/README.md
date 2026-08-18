@@ -1,10 +1,18 @@
 # akademisk-tekstaudit
 
+> **BETA — offentliggjort uden garanti.** © 2026 Peter Malmkjær. Fri akademisk og
+> ikke-kommerciel brug med kreditering; kommerciel brug kræver forudgående skriftlig
+> aftale. Sprogmodel-vurderinger kan være forkerte; brugeren bærer det fulde ansvar.
+> Se `LICENSE.md`.
+
 Evidensbaseret kvalitetsaudit af danske akademiske tekster (kapitler, efterskrifter, monografier,
 artikeludkast) på fem dimensioner — semantisk indhold, hermeneutisk indhold, teknisk opbygning,
 metaforbrug samt tabeller/figurer — plus en valgfri sjette flag-dimension for diskurs- og
 magtrefleksivitet (v1.1). Forankret 0–4-rubrik, to-parameter-kalibrering (genreprofil +
-niveau-baseline), vægtet aggregering, konfidensbånd og ordret tekstbelæg pr. score.
+niveau-baseline), vægtet aggregering, konfidensbånd og ordret tekstbelæg pr. score, samt
+tre målrettede fejninger/tjek: intern fakta-konsistens (v1.2), terminologisk forankring
+(v1.3) og AI-indsættelses-tjek af frisk indsat tekst (v1.4) — plus metodeblok for empiriske
+tidsskriftartikler og eksplicit batteri-anbefaling (v1.4).
 
 **Måler og flager — omskriver aldrig.** Omskrivning henvises til `academic-danish-klarsprog`.
 OPT-IN: kør kun ved eksplicit anmodning. Søster-skill: `academic-english-text-audit` (engelsk).

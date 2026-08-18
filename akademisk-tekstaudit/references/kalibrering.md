@@ -37,6 +37,24 @@ i metodeboksen.
   (opsummeringsbokse o.l. er apparat, ikke brødtekst).
 - *Tidsskriftartikel:* IMRaD-konventioner overtrumfer generiske T1-forventninger;
   scor T1 mod genrens skabelon.
+- *Tidsskriftartikel (empirisk) — metodeblok (v1.4):* Fem tjekpunkter, der scores som
+  del af S-dimensionen (S1/S4-belæg) og altid rapporteres som selvstændige flag:
+  (1) **Søgedokumentation:** bærer teksten en litteratur-dækningspåstand ("intet findes"),
+  skal søgestrenge, datoer og inklusionskriterier være angivet (evt. i supplement).
+  (2) **Operationalisering:** skøn og vægte (fx indsatsandele) skal have angivet indikatorer
+  og kombinationsregel — eller rapporteres som intervaller frem for punktestimater.
+  (3) **Design-eksplicitering:** casens enheder (overordnet case + indlejrede analyseenheder)
+  skal være navngivet, hvis designet reelt er indlejret.
+  (4) **Selvvaliderings-afgrænsning:** hvor validering er udført af samme system/modelfamilie,
+  skal teksten selv afgrænse, hvad der ville kræve eksternt (menneskeligt) blik.
+  (5) **Restfejls-dækning:** formuleringer af typen "alle kendte fejl" skal ledsages af et
+  dækningsgreb (stikprøve, blind re-audit eller estimeret restfejlsrate) eller en eksplicit
+  afgrænsning af, hvad formuleringen ikke kan sige.
+  **S4-skærpelser for genren:** ud over formuleringsstyrke mod belægsstyrke tjekkes
+  (a) generaliserings-scope — påstande, der glider fra casen til det generelle, uden at
+  afgrænsningen er markeret — og (b) institutionel præcision — påstande om produkter/
+  resultater skal afspejle deres faktiske institutionelle status (fx manuskript over for
+  udgivet, fagfællebedømt værk).
 - *Monografikapitel:* Kapitlet skal både stå selv og bære værkets røde tråd — T3 vurderer
   også krydshenvisninger til andre kapitler.
 

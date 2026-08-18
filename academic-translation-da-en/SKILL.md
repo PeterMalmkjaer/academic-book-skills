@@ -7,7 +7,8 @@ description: >-
   Use when translating a Danish social-science / management / economics textbook
   or monograph into English: register calibration, concept/termbase handling,
   per-section workflow, LaTeX integration (tcolorbox boxes, citations, TikZ),
-  and reference fidelity. NOT a general-purpose or literary translation tool;
+  and reference fidelity. Also covers journal-article manuscripts derived from such
+  projects (v0.2). NOT a general-purpose or literary translation tool;
   NOT for short texts, marketing copy, or non-academic prose.
 ---
 
@@ -78,6 +79,35 @@ monograph** into English and wants help with:
    **audit against 2–3 benchmark textbooks** in the field. Self-rated quality is
    uncalibrated until an external native-EN reader passes a chapter.
 
+## Invariants, abbreviations and mechanical tests (v0.2)
+
+Added from a journal-article translation prepared with this skill's method (August 2026).
+These apply to books AND articles; for articles they are mandatory.
+
+1. **Invariant list — register before translating, never translate.** Project-internal
+   codes and labels (analysis codes, decision-log numbers, verification levels, version
+   numbers, audit-finding IDs) bind the text to its logs, appendices and open data.
+   Spelling them out or translating them breaks traceability. Build the list FIRST;
+   enforce with a count test (each invariant: same count in source and target).
+2. **Abbreviation mapping — one binding table.** Danish micro-abbreviations (jf., fx,
+   bl.a., dvs., kap., inkl., evt., ca., s.) get ONE fixed English equivalent each,
+   decided before translation; ambiguous ones (bl.a., evt.) are marked for per-instance
+   decision and logged. Final test: zero Danish abbreviations in the target text.
+   Do NOT rewrite the source to remove abbreviations first — that adds an edit surface;
+   the mapping plus the mechanical test is safer.
+3. **Mechanical tests per main section, not only at the end:** invariant count; Danish-
+   abbreviation grep; number fidelity (decimal comma → decimal point is the ONLY permitted
+   change to any number); per-year citation count (source/target diff must be empty);
+   acronym first-use (each international acronym spelled out exactly once).
+4. **AI prose rhythm on the way across:** when the source is AI-assisted, translation is
+   the cheapest place to normalise LLM style markers — reduce em-dash density, normalise
+   quotation marks, and flag slogan-register sentences for the author (do not silently
+   rewrite). Coordinate with the ai-tell-audit skills rather than duplicating them.
+5. **Articles differ from books in scope control:** target text gets its OWN version
+   series; journal-format conversion (reference style, anonymisation for review) is
+   explicitly OUT of the translation pass — one transformation at a time, each with its
+   own verification.
+
 ## Files in this skill
 
 - `02_style_register.md` — register direction, hedging, voice, false-friends
@@ -89,7 +119,7 @@ monograph** into English and wants help with:
 - `07_reference_fidelity.md` — the citation-preservation rules and the
   cross-check method, plus RAG-verification of attributed theory.
 
-*Lean core, v0.1, drafted 2026-06-08 from the PM-textbook project. Grow with
+*Lean core, v0.2 (2026-08-07: invariants/abbreviations/mechanical-tests section added from the article-translation gate work; article manuscripts now in scope). Originally v0.1, drafted 2026-06-08 from the PM-textbook project. Grow with
 `03_termbase_methodology`, `05_false_friends_register`, `08_rag_verification`,
 `09_success_rating`, `10_source_observations`, `11_quality_bar`,
 `12_lessons_learned` as later chapters surface the need.*

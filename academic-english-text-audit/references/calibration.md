@@ -39,6 +39,24 @@ method box.
   (summary boxes and the like are apparatus, not body prose).
 - *Journal article:* IMRaD conventions override generic T1 expectations; score T1
   against the genre's template.
+- *Journal article (empirical) — methods block (v1.4):* Five checkpoints, scored as part
+  of dimension S (S1/S4 evidence) and always reported as standalone flags:
+  (1) **Search documentation:** if the text carries a literature-coverage claim ("nothing
+  exists"), search strings, dates and inclusion criteria must be stated (supplement allowed).
+  (2) **Operationalisation:** estimates and weights (e.g. effort shares) must state their
+  indicators and combination rule — or be reported as intervals rather than point estimates.
+  (3) **Design explication:** the case's units (overall case + embedded units of analysis)
+  must be named if the design is in fact embedded.
+  (4) **Self-validation delimitation:** where validation was performed by the same system/
+  model family, the text itself must delimit what would require an external (human) eye.
+  (5) **Residual-error coverage:** wordings of the type "all known errors" must be
+  accompanied by a coverage device (spot-check, blind re-audit, or an estimated residual
+  error rate) or an explicit statement of what the wording cannot claim.
+  **S4 sharpenings for the genre:** beyond claim strength against evidence strength, check
+  (a) generalisation scope — claims sliding from the case to the general without a marked
+  delimitation — and (b) institutional precision — claims about products/results must
+  reflect their actual institutional status (e.g. manuscript versus published,
+  peer-reviewed work).
 - *Monograph chapter:* The chapter must both stand alone and carry the work's through-line —
   T3 also assesses cross-references to other chapters.
 

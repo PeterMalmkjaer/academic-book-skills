@@ -1,6 +1,6 @@
 {
   "name": "akademisk-tekstaudit",
-  "version": "1.2",
+  "version": "1.5",
   "description": "Evidensbaseret kvalitetsaudit af danske akademiske tekster — 5 dimensioner, BARS-forankret 0–4-rubrik, konfidensbånd og tekstbelæg pr. score. Måler og flager; omskriver aldrig.",
   "author": {
     "name": "Peter Malmkjaer"
