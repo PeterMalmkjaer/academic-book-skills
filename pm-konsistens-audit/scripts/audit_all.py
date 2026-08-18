@@ -422,6 +422,28 @@ def check_star_headings(files, out):
     return hard
 
 
+def check_unreferenced_floats(src, out):
+    """Sektion 8: ureferede floats. En \\label{fig:..|tab:..}, der kun optræder ÉN gang i
+    korpus (dvs. ingen \\ref/\\Cref peger på den), er en figur/tabel, brødteksten aldrig
+    henviser til. REVIEW (ikke hardt flag): kan være bevidst konvention, men er (a) en
+    læserisiko (flydende floats lander væk fra omtalen) og (b) typisk lavthængende
+    kvalitetsløft. Tilføjet 2026-08-18 efter kvalitetsgate: fandt 14 ægte fund i PM-bogen
+    (kap06 x4, kap09 x5, kap13 x1, kap14 x2, kap15 x2), som to fulde tekstaudits + alle
+    tidligere kørsler ikke havde som eksplicit tjek."""
+    alltext="\n".join(txt for _,txt in src.values())
+    out.append("## 8. Ureferede floats (label uden \\ref/\\Cref) [REVIEW]\n")
+    n=0
+    for f,(_,txt) in sorted(src.items()):
+        labels=re.findall(r"\\label\{((?:fig|tab):[^}]+)\}", txt)
+        unref=[l for l in labels if len(re.findall(re.escape(l), alltext))==1]
+        for l in unref:
+            out.append(f"- {f}: `{l}` refereres aldrig i brødtekst")
+            n+=1
+    if n==0: out.append("- ingen — alle floats refereres ✓")
+    out.append(f"\n- Ureferede floats: **{n}** (review — beslut konvention: indfør \\ref-henvisning eller acceptér eksplicit).\n")
+    return n
+
+
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument('--src',default='kap*_body.tex')
@@ -455,8 +477,9 @@ def main():
             try: struct[f]=open(f,encoding='utf-8').read()
             except OSError: pass
     p7=check_star_headings(struct,out)
+    p8=check_unreferenced_floats(src,out)
     total=p1+p2+p3+p4+p5+p6+p7
-    review=rev_hi+rev_yr
+    review=rev_hi+rev_yr+p8
     out.append(f"\n## Konklusion\n{'RENT ✓ — 0 afvigelser.' if total==0 else f'{total} punkter til gennemgang (numre/henvisninger: '+str(p1+p2)+', reference-integritet: '+str(p3)+', kapitel-skabelon: '+str(p4)+', typeløse box-pointere: '+str(p5)+', afsnits-henvisninger: '+str(p6)+', chapter*-headers: '+str(p7)+').'}")
     if review:
         out.append(f"\n⚠ **REVIEW (tæller ikke som flag):** {rev_hi} høj-signal + {rev_yr} år-mismatch prosa-citationer uden bib-match — se §3.A. \"0 flag\" udelukker IKKE citerede-men-manglende referencer; gennemgå §3.A.")

@@ -221,6 +221,11 @@ Four elements beyond the criterion assessments:
   and weighted ≤ 0.05 in scored mode.
 
 
+- **Case facts about real companies/events:** NEVER flag as "error" merely because one
+  secondary work gives different numbers — secondary literature often varies. Check
+  contemporaneous primary/press sources, and phrase the finding as "sources vary — verify",
+  citing the specific counter-source and its year. "Differs from one source" is not "wrong".
+
 ## Design history (dimension choices MUST be justified here)
 
 - **v1.0 (July 2026):** Five dimensions (S/H/T/M/F), formalised from a cross-model review
@@ -253,3 +258,11 @@ Four elements beyond the criterion assessments:
   sees what it asks about — the absence of something expected requires an explicit step that
   asks about absence.
 - Future inclusion or exclusion of dimensions must be justified in this section.
+- **v1.5 (August 2026, mirrored from Danish sister):** Source-variation rule for case facts
+  added (Boundaries), after the PM-book quality gate produced a false positive: an auditor
+  flagged Enron's 20/70/10 split as a GE transplant, but contemporaneous press (TIME, 2001)
+  documents exactly that split for Enron — secondary accounts vary (PRC 1-5 with ~15% bottom
+  also circulates). Lesson: for real-world cases, "differs from one source" must be
+  distinguished from "wrong"; the flag phrasing is "sources vary — verify". The same gate
+  confirmed the value of the F1/F4 criteria (14 unreferenced floats found) — that check is now
+  also deterministic in pm-konsistens-audit (§8).

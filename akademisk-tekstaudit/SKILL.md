@@ -211,6 +211,10 @@ Fire elementer ud over kriterievurderingerne:
 - Dimension D vurderer refleksivitet om position og framing — ALDRIG positionen selv.
   D-fund formuleres som observation + spørgsmål til forfatteren, aldrig som holdningsanvisning.
   D er opt-in, uscoret som default, konfidens-loft middel, og ved scoret tilstand vægt ≤ 0,05.
+- **Case-fakta om virkelige virksomheder/begivenheder:** flag ALDRIG som "fejl", alene fordi
+  ét sekundærværk angiver andre tal — sekundærlitteraturen varierer ofte. Tjek samtidige
+  primær-/pressekilder, og formulér fundet som "kilder varierer — verificér" med den konkrete
+  modkilde og dens år. "Afviger fra én kilde" er ikke det samme som "forkert".
 
 
 ## Designhistorik (dimensionsvalg SKAL begrundes her)
@@ -241,4 +245,11 @@ Fire elementer ud over kriterievurderingerne:
   (*human-in-the-loop*, *quality by design*, *poka-yoke* m.fl.), hvis indsættelse løftede
   tekstens faglige forankring markant. Lærdom som v1.2: rubrikken ser kun, hvad den spørger
   om — fravær af noget forventeligt kræver et eksplicit trin, der spørger til fraværet.
+- **v1.5 (august 2026):** Kildevariations-regel for case-fakta tilføjet (Grænser), efter at
+  PM-bogens kvalitetsgate viste et falsk positiv: en auditor flagede Enrons 20/70/10-fordeling
+  som GE-transplantat, men samtidig presse (TIME, 2001) dokumenterer netop denne inddeling for
+  Enron — sekundærlitteraturen varierer (PRC 1-5 med ~15 % i bunden findes også). Lærdom: for
+  virkeligheds-cases skal "afviger fra én kilde" skelnes fra "forkert"; flag-formuleringen er
+  "kilder varierer — verificér". Samtidig bekræftede gaten F1/F4-kriteriets værdi (14 ureferede
+  floats fundet) — det tjek er nu også deterministisk i pm-konsistens-audit (§8).
 - Fremtidige til- eller fravalg af dimensioner skal begrundes i denne sektion.
