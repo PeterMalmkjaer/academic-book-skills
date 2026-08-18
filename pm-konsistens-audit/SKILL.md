@@ -1,20 +1,17 @@
 ---
 name: pm-konsistens-audit
 description: >-
-  Konsistens- og referenceaudit af en LaTeX-fagbog/lærebog (dansk), med fokus på at
-  numre er FORTLØBENDE pr. kapitel og at ALLE numeriske + semantiske henvisninger er
-  korrekte. Brug når brugeren vil verificere/rette: fortløbende nummerering af
-  Definition/Teoriboks/Perspektivboks/Case/Eksempel/Figur/Tabel; dangling
-  krydshenvisninger (afsnit/Boks/Case/Figur/Tabel X.Y); at konceptregister og
-  teorioversigt (Appendix) peger på RETTE afsnit/definitioner/bokse/floats; og at
-  citationer i oversigtstabeller matcher references.bib; samt REFERENCE-INTEGRITET: prosa-
-  citationer (forfatter-år) der mangler en references.bib-nøgle, dublet-poster (samme DOI/titel),
-  orphan-nøgler, og nøglenavn↔år-felt-mismatch. Triggere: "kategori-audit", "reference-integritet",
-  "prosa citation uden nøgle", "dublet reference", "bib-audit",
-  "fortløbende numre", "tjek henvisninger", "konceptregister konsistens", "Appendix B
-  konsistens", "peger figur/tabel-referencer rigtigt", "dangling references".
-  OPT-IN. Flagger og foreslår — ændrer aldrig mening/tal/citater uden eksplicit OK;
-  redigerer transaktionelt med assertion pr. linje + byte-diff-verifikation.
+  Konsistens- og referenceaudit af en LaTeX-fagbog/lærebog (dansk): fortløbende nummerering
+  pr. kapitel af Definition/Teoriboks/Perspektivboks/Case/Eksempel/Figur/Tabel; dangling
+  krydshenvisninger (afsnit/Boks/Case/Figur/Tabel X.Y); at konceptregister og teorioversigt
+  (Appendix) peger på RETTE afsnit/definitioner/bokse/floats; citationer i oversigtstabeller
+  mod references.bib; REFERENCE-INTEGRITET (prosa-citationer uden bib-nøgle, dubletter,
+  orphan-nøgler, nøglenavn↔år-mismatch); og UREFEREDE FLOATS (label uden ref-henvisning).
+  Triggere: "kategori-audit", "reference-integritet", "prosa citation uden nøgle", "dublet
+  reference", "bib-audit", "fortløbende numre", "tjek henvisninger", "konceptregister
+  konsistens", "Appendix B konsistens", "peger figur/tabel-referencer rigtigt", "dangling
+  references", "ureferede figurer". OPT-IN. Flagger og foreslår — ændrer aldrig
+  mening/tal/citater uden eksplicit OK.
 ---
 
 # PM-konsistens-audit
