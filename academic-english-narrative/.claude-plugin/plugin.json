@@ -1,9 +1,0 @@
-{
-  "name": "academic-english-narrative",
-  "version": "1.0",
-  "description": "Register and narrative-voice editing for English academic manuscripts through selectable style presets calibrated against measurable features. Body prose only; never alters meaning, citations or numbers.",
-  "author": {
-    "name": "Peter Malmkjaer"
-  },
-  "homepage": "https://github.com/PeterMalmkjaer/academic-book-skills"
-}
