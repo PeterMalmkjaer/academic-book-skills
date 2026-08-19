@@ -6,11 +6,13 @@ description: >-
   krydshenvisninger (afsnit/Boks/Case/Figur/Tabel X.Y); at konceptregister og teorioversigt
   (Appendix) peger på RETTE afsnit/definitioner/bokse/floats; citationer i oversigtstabeller
   mod references.bib; REFERENCE-INTEGRITET (prosa-citationer uden bib-nøgle, dubletter,
-  orphan-nøgler, nøglenavn↔år-mismatch); og UREFEREDE FLOATS (label uden ref-henvisning).
+  orphan-nøgler, nøglenavn↔år-mismatch); UREFEREDE FLOATS (label uden ref-henvisning);
+  og EPIGRAFER (kapitelåbningens citat: ordret citat uden kildeår, kildeår uden bib-post,
+  attributions- og citationstegns-konvention).
   Triggere: "kategori-audit", "reference-integritet", "prosa citation uden nøgle", "dublet
   reference", "bib-audit", "fortløbende numre", "tjek henvisninger", "konceptregister
   konsistens", "Appendix B konsistens", "peger figur/tabel-referencer rigtigt", "dangling
-  references", "ureferede figurer". OPT-IN. Flagger og foreslår — ændrer aldrig
+  references", "ureferede figurer", "epigraf", "kapitelcitat", "motto uden kilde". OPT-IN. Flagger og foreslår — ændrer aldrig
   mening/tal/citater uden eksplicit OK.
 ---
 
@@ -171,6 +173,38 @@ Baggrund: PM-bogens konceptregister havde 52 bare `Box N.N`, hvoraf 14 registerl
 
 ---
 
+## Epigrafer (sektion 9)
+
+Kapitelåbningens citat står i `\begin{quote}` **før** brødteksten og bærer aldrig `\cite`.
+Den er derfor usynlig for både §3 (prosa↔bib) og enhver citations-scanning — samtidig med at
+den er bogens mest eksponerede citat. En anmelder slår netop epigrafen efter.
+
+**v0.10.0 (2026-08-19) — hvorfor tjekket findes.** I PM-bogen viste en manuel gennemgang, at
+tre af fjorten epigrafer var forkerte: én var en parafrase sat i citationstegn (verbet var
+skiftet ud), én bar forkert årstal **både i epigrafen og i `references.bib`**, og én havde
+ingen kilde overhovedet — mens den eneste bib-post for forfatteren pegede på et andet værk.
+Yderligere fire stod som ordrette citater helt uden år. Hverken kildeverificeringen,
+korrekturen eller nogen tidligere audit-kørsel havde set dem. Årsagen er strukturel, ikke
+menneskelig: værktøjerne scannede brødtekst og litteraturliste, og epigrafen er hverken.
+
+**Hvad §9 flager**
+
+| Kode | Type | Regel |
+|---|---|---|
+| 9A | HARDT | Teksten står i citationstegn, men attributionen har **intet årstal** → citatet kan ikke slås efter. Undtaget: markeret parafrase (`Frit efter …`, `After …`, `Adapted from …`) og selv-attribution (`Forfatteren`, `The author`). |
+| 9B | HARDT | Attributionen har et årstal, men **ingen bib-post** matcher efternavn+år (eller `\citeyear`-nøglen findes ikke) → hængende kilde. |
+| 9C | REVIEW | Attributions-formatet er ikke ensartet (nogle epigrafer med år, andre uden). |
+| 9D | REVIEW | Citationstegns-konventionen er ikke ensartet på tværs af epigraferne (``` ``…'' ``` vs `` `…' ``). |
+
+**Escape-hatchen er bevidst.** En epigraf, der ærligt er en omskrivning, skal markeres som
+sådan — `--- Frit efter W. Edwards Deming (\citeyear{Deming1982}, s.~270)` er korrekt praksis
+og udløser intet flag. Det, §9 rammer, er en omskrivning, der *udgiver sig for* at være ordret.
+
+**Grænser.** §9 læser kun den **første** `\begin{quote}` inden for filens første 25 linjer —
+altså kapitelåbningen, ikke blokcitater i brødteksten. Den verificerer ikke ordlyden mod kilden;
+det kan kun et menneske eller et opslag. Den siger: *dette citat kan ikke slås efter* — og det
+er den påstand, der har vist sig at være den dyre.
+
 ## Rør-ikke / beskyttet
 Citater, citationer/forfattere/år/DOI, definerede term-navne, boks-ordlyd, tal.
 Ret aldrig en citation uden eksplicit brugerbeslutning (flag som "beskyttet").
@@ -182,6 +216,7 @@ Ret aldrig en citation uden eksplicit brugerbeslutning (flag som "beskyttet").
   `konceptregister_body.tex`) og `--appendix` (default `09_Back_Matter/appendiks_b_teorioversigt.tex`)
   til sektion 5 typeløse box-pointere; `--structure` (komma-separerede globs af front/bag-matter
   `.tex` til sektion 7 `\chapter*`-header-tjek); `--out` (markdown-rapport).
-  Sektion 4 (kapitel-skabelon), 5 (typeløse box-pointere), 6 (prosa-henvisninger) + 7
-  (`\chapter*`-headers) kører altid — kræver kun `.tex`.
+  Sektion 4 (kapitel-skabelon), 5 (typeløse box-pointere), 6 (prosa-henvisninger), 7
+  (`\chapter*`-headers), 8 (ureferede floats) + 9 (epigrafer) kører altid — kræver kun `.tex`.
+  Sektion 9's del B (kildeår↔bib) kræver dog `--bib`.
   Eksempel: `python3 scripts/audit_all.py --src "kap*_body.tex" --aux main.aux --bib references.bib --register konceptregister_body.tex --appendix 09_Back_Matter/appendiks_b_teorioversigt.tex --structure "afterword_body.tex,00_Front_Matter/*.tex" --out KATEGORI_AUDIT.md`

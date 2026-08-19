@@ -3,6 +3,24 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [1.1.0] — 2026-08-19
+
+### Added
+- **`pm-konsistens-audit` 0.10.0 — sektion 9: epigraf-tjek.** Kapitelåbningens citat står i
+  `\begin{quote}` før brødteksten og bærer aldrig `\cite`; den var derfor usynlig for både
+  §3 (prosa↔bib) og enhver citations-scanning. Fire kontroller: **9A** ordret citat uden
+  kildeår (hardt), **9B** kildeår uden matchende bib-post (hardt), **9C** attributions-format
+  ikke ensartet (review), **9D** citationstegns-konvention ikke ensartet (review). Markeret
+  parafrase (`Frit efter …`) og selv-attribution (`Forfatteren`) er undtaget — bevidst, så
+  ærlig omskrivning ikke straffes; det, der rammes, er en omskrivning, der udgiver sig for at
+  være ordret.
+  **Baggrund:** i PM-bogen var tre af fjorten epigrafer forkerte (parafrase i citationstegn;
+  forkert årstal både i epigraf og i `references.bib`; citat helt uden kilde), og fire stod som
+  ordrette citater uden år. Hverken kildeverificering, korrektur eller nogen tidligere
+  audit-kørsel havde set dem. Fejlklassen er den dyreste i en fagbog — en anmelder slår netop
+  epigrafen efter.
+  **Regression:** hele rapporten før §9 er byte-identisk med 0.9.2 på samme input.
+
 ## [1.0.0] — 2026-08-11
 
 ### Added

@@ -444,6 +444,159 @@ def check_unreferenced_floats(src, out):
     return n
 
 
+# --- Sektion 9: epigrafer -------------------------------------------------
+_PARA_MARK = re.compile(r'^(frit\s+efter|fritt\s+etter|efter|after|adapted\s+from|'
+                        r'paraphrased?\s+from|baseret\s+p[aa\u00e5]|based\s+on)\b', re.I)
+_SELF_MARK = re.compile(r'^(forfatteren|the\s+author|forf\.?)\b', re.I)
+
+def _epigraph_block(txt, head_lines=25):
+    """Returnerer (start_linje, brodtekst, attribution) for foerste \\begin{quote}-blok
+    inden for de foerste head_lines linjer — dvs. kapitelaabningens epigraf. None hvis ingen."""
+    L = txt.split('\n')[:head_lines]
+    try:
+        i = next(n for n, l in enumerate(L) if l.strip().startswith(r'\begin{quote}'))
+    except StopIteration:
+        return None
+    body, att = [], ''
+    for l in L[i+1:]:
+        s = l.strip()
+        if s.startswith(r'\end{quote}'): break
+        if s.startswith(r'\hfill'):
+            att = re.sub(r'^\\hfill\s*-*\s*', '', s).strip()
+        elif s:
+            body.append(s)
+    return (i+1, ' '.join(body), att)
+
+def _epi_plain(body):
+    """Epigrafens tekst uden LaTeX og citationstegn — kun til laesbar rapport-visning."""
+    s = re.sub(r'\\(?:textit|emph|itshape|textbf)\s*', '', body)
+    s = s.replace('{', '').replace('}', '').replace('``', '').replace("''", '')
+    s = re.sub(r"(?<!\\w)`|'(?!\\w)", '', s)
+    s = re.sub(r'---', '\u2014', s)
+    return re.sub(r'\s+', ' ', s).strip()
+
+def _epi_quotestyle(body):
+    """'double' hvis ``...'' bruges, 'single' hvis `...' bruges, None hvis ingen citationstegn.
+    Ingen citationstegn = teksten praesenteres IKKE som ordret citat."""
+    if '``' in body: return 'double'
+    if re.search(r"(?<!`)`(?!`)", body): return 'single'
+    return None
+
+def _epi_surnames(att):
+    """Efternavne i en attributionslinje, normaliseret. Fjerner parafrase-markoerer,
+    aarstal, LaTeX og bindeord."""
+    a = _PARA_MARK.sub('', att).strip()
+    a = re.sub(r'\\citeyear\{[^}]*\}', '', a)
+    a = re.sub(r'\((?:\d{4}[a-z]?|[^)]*\d{4}[^)]*)\)', '', a)
+    a = re.sub(r'\\[a-zA-Z]+\s*', '', a).replace('{', '').replace('}', '')
+    a = re.sub(r',\s*(s\.|p\.|pp\.)\s*[\d~\-\u2013]+', '', a)
+    out = []
+    for chunk in re.split(r'\s*(?:&|\band\b|\bog\b|,|;)\s*', a):
+        chunk = chunk.strip().rstrip('.')
+        if not chunk or re.match(r'^(et\s+al|m\.?fl)\.?$', chunk, re.I): continue
+        toks = [w for w in chunk.split() if re.match(r"^[A-Z\u00c0-\u00dd]", w)]
+        if toks:
+            s = _norm_sur(toks[-1])
+            if s and len(s) > 1: out.append(s)
+    return out
+
+def check_epigraphs(src, bib, out):
+    """Sektion 9: kapitelaabningens epigrafer.
+
+    Hvorfor et selvstaendigt tjek: epigrafer staar i \\begin{quote} FOER broedteksten og
+    baerer aldrig \\cite. De er derfor usynlige for BAADE §3 (prosa<->bib) og enhver
+    citations-scanning — samtidig med at de er bogens mest eksponerede citater. Tilfoejet
+    2026-08-19 efter et fund i PM-bogen: tre af tretten epigrafer var forkerte (en parafrase
+    sat i citationstegn, et forkert aarstal baade i epigraf og bib, et citat uden kilde),
+    og fire stod som ordrette citater helt uden aar. Ingen tidligere audit saa dem.
+
+    HARDE flag:
+      9A ordret citat (citationstegn) UDEN aarstal og uden parafrase-markoer
+         ("Frit efter"/"After"/...) og uden selv-attribution ("Forfatteren"/"The author").
+      9B aarstal angivet, men INGEN bib-post matcher efternavn+aar (haengende kilde).
+    REVIEW:
+      9C attributions-format ikke ensartet (nogle med aar, andre uden).
+      9D citationstegns-konvention ikke ensartet paa tvaers af epigraferne."""
+    out.append("## 9. Epigrafer (kapitelaabningens citat)\n")
+    rows = []
+    for f, (_, txt) in sorted(src.items()):
+        e = _epigraph_block(txt)
+        if not e: continue
+        ln, body, att = e
+        yrs = re.findall(r'\((\d{4})[a-z]?\)', att)
+        cite = re.findall(r'\\citeyear\{([^}]*)\}', att)
+        if cite:
+            for k in cite:
+                if k in bib and bib[k].get('year'): yrs.append(bib[k]['year'])
+        rows.append(dict(f=f, ln=ln, body=body, plain=_epi_plain(body), att=att,
+                         style=_epi_quotestyle(body),
+                         yrs=yrs, surs=_epi_surnames(att),
+                         para=bool(_PARA_MARK.match(att)), selfa=bool(_SELF_MARK.match(att)),
+                         cite=cite))
+    if not rows:
+        out.append("- ingen epigrafer fundet i kildefilerne\n")
+        return 0, 0
+    hard = 0
+    out.append("### 9A. Ordret citat uden kildeaar [HARDT]\n")
+    n9a = 0
+    for r in rows:
+        if r['style'] and not r['yrs'] and not r['para'] and not r['selfa']:
+            out.append(f"- {r['f']}:{r['ln']} `{r['att']}` --- citationstegn, men intet aarstal: "
+                       f"citatet kan ikke slaas efter. \u00bb{r['plain'][:90]}\u00ab")
+            n9a += 1
+    if n9a == 0: out.append("- ingen \u2713")
+    hard += n9a
+    out.append(f"\n- Ordrette citater uden aar: **{n9a}**\n")
+
+    out.append("### 9B. Kildeaar uden bib-post [HARDT]\n")
+    n9b = 0
+    for r in rows:
+        if not r['yrs']: continue
+        ok = False
+        for k in r['cite']:
+            if k in bib: ok = True
+        if not ok:
+            for key, meta in bib.items():
+                if meta.get('year') in r['yrs'] and any(s in meta.get('surs', []) for s in r['surs']):
+                    ok = True; break
+        if not ok:
+            out.append(f"- {r['f']}:{r['ln']} `{r['att']}` --- ingen bib-post matcher "
+                       f"{r['surs']} + {sorted(set(r['yrs']))}")
+            n9b += 1
+    if n9b == 0: out.append("- ingen \u2713")
+    hard += n9b
+    out.append(f"\n- Haengende epigraf-kilder: **{n9b}**\n")
+
+    out.append("### 9C. Attributions-format [REVIEW]\n")
+    withyr = [r for r in rows if r['yrs']]
+    noyr = [r for r in rows if not r['yrs']]
+    out.append(f"- med aarstal: {len(withyr)} | uden aarstal: {len(noyr)} "
+               f"(heraf {sum(1 for r in noyr if r['selfa'])} selv-attribution, "
+               f"{sum(1 for r in noyr if r['para'])} markeret parafrase)")
+    rev = 0
+    if withyr and noyr:
+        rev += 1
+        for r in noyr:
+            if not (r['selfa'] or r['para']):
+                out.append(f"    - uden aar: {r['f']}:{r['ln']}  `{r['att']}`")
+
+    out.append("\n### 9D. Citationstegns-konvention i epigrafer [REVIEW]\n")
+    styles = collections.Counter(r['style'] for r in rows if r['style'])
+    if len(styles) > 1:
+        rev += 1
+        minority = min(styles, key=lambda s: styles[s])
+        out.append(f"- blandet: " + ", ".join(f"{k} x{v}" for k, v in styles.items()) +
+                   f" --- tjek minoriteten ({minority}):")
+        for r in rows:
+            if r['style'] == minority:
+                out.append(f"    - {r['f']}:{r['ln']}")
+    else:
+        out.append("- ensartet \u2713" if styles else "- ingen epigrafer med citationstegn")
+
+    out.append(f"\n- Epigrafer i alt: {len(rows)}. **{hard} harde flag**, {rev} review-punkter.\n")
+    return hard, rev
+
+
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument('--src',default='kap*_body.tex')
@@ -478,9 +631,10 @@ def main():
             except OSError: pass
     p7=check_star_headings(struct,out)
     p8=check_unreferenced_floats(src,out)
-    total=p1+p2+p3+p4+p5+p6+p7
-    review=rev_hi+rev_yr+p8
-    out.append(f"\n## Konklusion\n{'RENT ✓ — 0 afvigelser.' if total==0 else f'{total} punkter til gennemgang (numre/henvisninger: '+str(p1+p2)+', reference-integritet: '+str(p3)+', kapitel-skabelon: '+str(p4)+', typeløse box-pointere: '+str(p5)+', afsnits-henvisninger: '+str(p6)+', chapter*-headers: '+str(p7)+').'}")
+    p9h,p9r=check_epigraphs(src, (parse_bib(a.bib) if os.path.exists(a.bib) else {}), out)
+    total=p1+p2+p3+p4+p5+p6+p7+p9h
+    review=rev_hi+rev_yr+p8+p9r
+    out.append(f"\n## Konklusion\n{'RENT ✓ — 0 afvigelser.' if total==0 else f'{total} punkter til gennemgang (numre/henvisninger: '+str(p1+p2)+', reference-integritet: '+str(p3)+', kapitel-skabelon: '+str(p4)+', typeløse box-pointere: '+str(p5)+', afsnits-henvisninger: '+str(p6)+', chapter*-headers: '+str(p7)+', epigrafer: '+str(p9h)+').'}")
     if review:
         out.append(f"\n⚠ **REVIEW (tæller ikke som flag):** {rev_hi} høj-signal + {rev_yr} år-mismatch prosa-citationer uden bib-match — se §3.A. \"0 flag\" udelukker IKKE citerede-men-manglende referencer; gennemgå §3.A.")
     open(a.out,'w',encoding='utf-8').write("\n".join(out))
