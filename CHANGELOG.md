@@ -3,6 +3,24 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [1.2.0] — 2026-08-19
+
+### Added
+- **`pm-konsistens-audit` 0.11.0 — sektion 10: epigrafer PAA TVAERS af udgaver (`--mirror`).**
+  §9 ser kun én udgave, så en fejl hvor DA og EN har FORSKELLIGE epigrafer var usynlig for begge
+  kørsler. Fire sammenligninger pr. kapitelpar: 10A tilstedeværelse, 10B citat-status (den ene
+  i citationstegn, den anden ikke), 10C årstal (med `\citeyear`-nøgler slået op i `--bib`, så
+  `\citeyear{Deming1982}` og `(1982)` sammenlignes som årstal), 10D tal i epigrafteksten.
+  **Regressionstestet mod den faktiske fejl:** mod EN-kilden FØR rettelsen udløses 10B og 10D
+  på kap02; mod den rettede tilstand 0 afvigelser; 10C udløses korrekt ikke.
+  Der er bevidst kun ÉN implementation — den engelske søsterskill henviser hertil.
+- **§9: `--epigraph-head N`** gør de hidtil hårdkodede 25 linjer konfigurerbare.
+- **§9E: filer uden epigraf** rapporteres nu. Før blev de sprunget lydløst over, så en glemt
+  epigraf var usynlig (i PM-bogen: kap04, kap13, kap14 — bevidst, men det kunne man ikke se).
+
+### Unchanged
+- §1-§8 og §9A-§9D er byte-identiske med 0.10.0 på samme input.
+
 ## [1.1.0] — 2026-08-19
 
 ### Added

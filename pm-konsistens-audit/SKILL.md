@@ -205,6 +205,46 @@ altså kapitelåbningen, ikke blokcitater i brødteksten. Den verificerer ikke o
 det kan kun et menneske eller et opslag. Den siger: *dette citat kan ikke slås efter* — og det
 er den påstand, der har vist sig at være den dyre.
 
+### Sektion 10 — epigrafer PAA TVAERS af udgaver (`--mirror`)
+
+**v0.11.0 (2026-08-19).** §9 ser kun én udgave. Den fejl, hvor DA og EN har *forskellige*
+epigrafer, er derfor usynlig for begge kørsler. Præcis den fejl fandtes i PM-bogen: DA's kap02
+havde en markeret parafrase med 94 %/6 %, EN et ordret citat med 85 % — forskelligt tal,
+forskellig status. Den blev fundet, fordi udgaverne blev lagt ved siden af hinanden i hånden.
+
+`--mirror "<glob til den anden udgaves kapitelfiler>"` parrer filerne på kapitelnummeret og
+sammenligner fire ting:
+
+| Kode | Regel |
+|---|---|
+| 10A | Epigrafen findes kun i den ene udgave. |
+| 10B | Den ene præsenterer epigrafen som ordret citat, den anden ikke. Samme kilde kan ikke både være og ikke være ordret. |
+| 10C | Årstallene afviger. `\citeyear`-nøgler slås op i `--bib`, så DA's `\citeyear{Deming1982}` og EN's `(1982)` sammenlignes som *årstal* og ikke som forskellige strenge. |
+| 10D | Tallene i selve epigrafteksten afviger. |
+
+**Grænser, som er værd at kende.** 10D sammenligner *cifre*. Et tal skrevet med bogstaver
+("Eighty-five percent") registreres som fraværende, ikke som 85 — det giver stadig et udslag,
+men det er "den ene har tal, den anden ikke", ikke "94 mod 85". Efternavne sammenlignes ikke
+på tværs: attributionerne er sprogligt forskellige ("Frit efter" mod "Adapted from"), og
+begge udledes af samme funktion, så en sammenligning ville være cirkulær.
+
+**Regressionstestet mod den faktiske fejl:** kørt mod EN-kildens tilstand FØR rettelsen udløser
+den 10B og 10D på kap02; kørt mod den rettede tilstand melder den 0 afvigelser. 10C udløses
+korrekt IKKE, fordi nøgleopslaget opløser begge udtryk til 1982.
+
+Kørslen er ét-vejs: du kører den fra den ene udgave og peger `--mirror` på den anden. Der er
+bevidst kun ÉN implementation — den engelske søsterskill henviser hertil frem for at have sin
+egen, så de to ikke kan divergere (det skete for `scan.py` i juli, jf. CHANGELOG).
+
+```bash
+python3 scripts/audit_all.py --src "kap*_body.tex" --bib references.bib \
+    --mirror "../PM_Textbook(EN)/kap*_body_EN.tex" --out KATEGORI_AUDIT.md
+```
+
+**Nyt i §9 samtidig:** `--epigraph-head N` gør de 25 linjer konfigurerbare, og **9E** rapporterer
+nu hvilke kildefiler der slet INGEN epigraf har — før blev de sprunget lydløst over, så en
+glemt epigraf var usynlig.
+
 ## Rør-ikke / beskyttet
 Citater, citationer/forfattere/år/DOI, definerede term-navne, boks-ordlyd, tal.
 Ret aldrig en citation uden eksplicit brugerbeslutning (flag som "beskyttet").
@@ -218,5 +258,7 @@ Ret aldrig en citation uden eksplicit brugerbeslutning (flag som "beskyttet").
   `.tex` til sektion 7 `\chapter*`-header-tjek); `--out` (markdown-rapport).
   Sektion 4 (kapitel-skabelon), 5 (typeløse box-pointere), 6 (prosa-henvisninger), 7
   (`\chapter*`-headers), 8 (ureferede floats) + 9 (epigrafer) kører altid — kræver kun `.tex`.
-  Sektion 9's del B (kildeår↔bib) kræver dog `--bib`.
+  Sektion 9's del B (kildeår↔bib) kræver dog `--bib`; sektion 10 kræver `--mirror`
+  (glob til den anden udgaves kapitelfiler) og bruger `--bib` til nøgleopslag.
+  `--epigraph-head N` styrer, hvor mange linjer i filens top §9/§10 leder i (default 25).
   Eksempel: `python3 scripts/audit_all.py --src "kap*_body.tex" --aux main.aux --bib references.bib --register konceptregister_body.tex --appendix 09_Back_Matter/appendiks_b_teorioversigt.tex --structure "afterword_body.tex,00_Front_Matter/*.tex" --out KATEGORI_AUDIT.md`

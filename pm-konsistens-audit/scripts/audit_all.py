@@ -500,7 +500,7 @@ def _epi_surnames(att):
             if s and len(s) > 1: out.append(s)
     return out
 
-def check_epigraphs(src, bib, out):
+def check_epigraphs(src, bib, out, head=25):
     """Sektion 9: kapitelaabningens epigrafer.
 
     Hvorfor et selvstaendigt tjek: epigrafer staar i \\begin{quote} FOER broedteksten og
@@ -519,9 +519,11 @@ def check_epigraphs(src, bib, out):
       9D citationstegns-konvention ikke ensartet paa tvaers af epigraferne."""
     out.append("## 9. Epigrafer (kapitelaabningens citat)\n")
     rows = []
+    noepi = []
     for f, (_, txt) in sorted(src.items()):
-        e = _epigraph_block(txt)
-        if not e: continue
+        e = _epigraph_block(txt, head)
+        if not e:
+            noepi.append(f); continue
         ln, body, att = e
         yrs = re.findall(r'\((\d{4})[a-z]?\)', att)
         cite = re.findall(r'\\citeyear\{([^}]*)\}', att)
@@ -593,8 +595,85 @@ def check_epigraphs(src, bib, out):
     else:
         out.append("- ensartet \u2713" if styles else "- ingen epigrafer med citationstegn")
 
+    out.append("\n### 9E. Filer uden epigraf [REVIEW]\n")
+    if noepi:
+        rev += 1
+        out.append("- " + ", ".join(noepi) + f" ({len(noepi)} af {len(rows)+len(noepi)}) --- "
+                   "bevidst konvention eller glemt? Tjekket ser kun de foerste "
+                   f"{head} linjer (`--epigraph-head`).")
+    else:
+        out.append("- ingen \u2014 alle kildefiler har en epigraf \u2713")
+
     out.append(f"\n- Epigrafer i alt: {len(rows)}. **{hard} harde flag**, {rev} review-punkter.\n")
     return hard, rev
+
+
+# --- Sektion 10: kryds-udgave-sammenligning af epigrafer ---------------------
+def check_epigraph_mirror(src, mirror_pat, out, head=25, bib=None):
+    """Sektion 10: sammenligner epigraferne kapitel for kapitel mod den ANDEN udgave.
+
+    Hvorfor: §9 ser kun EEN udgave. En fejl, hvor DA og EN har FORSKELLIGE epigrafer, er
+    usynlig for begge koersler. Netop den fejl fandtes i PM-bogen (kap02: DA havde en markeret
+    parafrase med 94%/6%, EN et ordret citat med 85% --- forskelligt tal, forskellig status).
+    Den blev kun fundet, fordi udgaverne blev lagt ved siden af hinanden i haanden.
+    Tilfoejet 2026-08-19.
+
+    Parring sker paa kapitelnummeret i filnavnet. Fire sammenligninger pr. par:
+      10A tilstedevaerelse  --- den ene har epigraf, den anden ikke
+      10B citat-status      --- den ene staar i citationstegn, den anden ikke
+      10C aarstal           --- forskellige aarstal (eller aar kun i den ene)
+      10D tal i teksten     --- forskellige tal i selve epigrafen (fanger 94 vs 85)
+    Efternavne sammenlignes IKKE paa tvaers: attributionerne er sprogligt forskellige
+    ("Frit efter" vs "Adapted from"), og efternavnene udledes af samme funktion i begge."""
+    out.append("## 10. Epigrafer paa tvaers af udgaver [kraever --mirror]\n")
+    other = {}
+    for f in sorted(glob.glob(mirror_pat)):
+        m = re.search(r'(\d+)', f.split('/')[-1])
+        if not m: continue
+        try: other[int(m.group(1))] = (f, open(f, encoding='utf-8').read())
+        except OSError: continue
+    if not other:
+        out.append(f"- ingen filer matchede `{mirror_pat}` --- sprunget over\n")
+        return 0
+    def digits(s):
+        return sorted(set(re.findall(r'\d+', re.sub(r'\\[a-zA-Z]+|\{|\}', ' ', s))))
+    n = 0
+    for f, (ch, txt) in sorted(src.items()):
+        if ch not in other: continue
+        of, otxt = other[ch]
+        a, b = _epigraph_block(txt, head), _epigraph_block(otxt, head)
+        if (a is None) != (b is None):
+            out.append(f"- **10A** kap{ch:02d}: epigraf findes kun i "
+                       f"`{f if a else of}` --- den anden udgave mangler den"); n += 1; continue
+        if a is None: continue
+        sa, sb = _epi_quotestyle(a[1]), _epi_quotestyle(b[1])
+        if bool(sa) != bool(sb):
+            q, p = (f, of) if sa else (of, f)
+            out.append(f"- **10B** kap{ch:02d}: `{q}` praesenterer epigrafen som ORDRET CITAT, "
+                       f"`{p}` goer ikke. Samme kilde kan ikke baade vaere og ikke vaere ordret."); n += 1
+        def years(att):
+            """Aarstal, med \\citeyear-noegler slaaet op i bib'en, saa DA's \\citeyear{X}
+            og EN's (1982) sammenlignes som AARSTAL og ikke som forskellige strenge."""
+            ys = set(re.findall(r'\((\d{4})[a-z]?\)', att))
+            keys = re.findall(r'\\citeyear\{([^}]*)\}', att)
+            unresolved = []
+            for k in keys:
+                y = (bib or {}).get(k, {}).get('year')
+                if y: ys.add(y)
+                else: unresolved.append(k)
+            return sorted(ys), sorted(unresolved)
+        ya, ua = years(a[2]); yb, ub = years(b[2])
+        if ya != yb or ua != ub:
+            out.append(f"- **10C** kap{ch:02d}: aarstal afviger --- "
+                       f"`{f}`: {ya or 'ingen'}{' + uopslaaelige noegler '+str(ua) if ua else ''}"
+                       f" vs `{of}`: {yb or 'ingen'}{' + uopslaaelige noegler '+str(ub) if ub else ''}"); n += 1
+        da_, db = digits(a[1]), digits(b[1])
+        if da_ != db:
+            out.append(f"- **10D** kap{ch:02d}: TAL i epigrafteksten afviger --- "
+                       f"`{f}`: {da_ or 'ingen'} vs `{of}`: {db or 'ingen'}"); n += 1
+    if n == 0: out.append("- ingen afvigelser --- epigraferne er strukturelt ens i de to udgaver \u2713")
+    out.append(f"\n- Kryds-udgave-afvigelser: **{n}**\n")
+    return n
 
 
 def main():
@@ -605,6 +684,8 @@ def main():
     ap.add_argument('--bib',default='references.bib',help='references.bib til reference-integritet (sektion 3)')
     ap.add_argument('--register',default='konceptregister_body.tex',help='konceptregister til typeløs-box-tjek (sektion 5)')
     ap.add_argument('--appendix',default='09_Back_Matter/appendiks_b_teorioversigt.tex',help='appendiks til typeløs-box-tjek (sektion 5)')
+    ap.add_argument('--mirror',default='',help='glob til DEN ANDEN udgaves kapitelfiler (sektion 10: kryds-udgave-epigraftjek)')
+    ap.add_argument('--epigraph-head',type=int,default=25,help='hvor mange linjer i filens top sektion 9/10 leder efter epigrafen i')
     ap.add_argument('--structure',default='',help='front/bag-matter .tex (komma-separerede globs) til sektion 7 (\\chapter*-header-tjek)')
     a=ap.parse_args()
     src=load_sources(a.src)
@@ -631,10 +712,12 @@ def main():
             except OSError: pass
     p7=check_star_headings(struct,out)
     p8=check_unreferenced_floats(src,out)
-    p9h,p9r=check_epigraphs(src, (parse_bib(a.bib) if os.path.exists(a.bib) else {}), out)
-    total=p1+p2+p3+p4+p5+p6+p7+p9h
+    p9h,p9r=check_epigraphs(src, (parse_bib(a.bib) if os.path.exists(a.bib) else {}), out, a.epigraph_head)
+    p10=check_epigraph_mirror(src, a.mirror, out, a.epigraph_head,
+                              (parse_bib(a.bib) if os.path.exists(a.bib) else {})) if a.mirror else 0
+    total=p1+p2+p3+p4+p5+p6+p7+p9h+p10
     review=rev_hi+rev_yr+p8+p9r
-    out.append(f"\n## Konklusion\n{'RENT ✓ — 0 afvigelser.' if total==0 else f'{total} punkter til gennemgang (numre/henvisninger: '+str(p1+p2)+', reference-integritet: '+str(p3)+', kapitel-skabelon: '+str(p4)+', typeløse box-pointere: '+str(p5)+', afsnits-henvisninger: '+str(p6)+', chapter*-headers: '+str(p7)+', epigrafer: '+str(p9h)+').'}")
+    out.append(f"\n## Konklusion\n{'RENT ✓ — 0 afvigelser.' if total==0 else f'{total} punkter til gennemgang (numre/henvisninger: '+str(p1+p2)+', reference-integritet: '+str(p3)+', kapitel-skabelon: '+str(p4)+', typeløse box-pointere: '+str(p5)+', afsnits-henvisninger: '+str(p6)+', chapter*-headers: '+str(p7)+', epigrafer: '+str(p9h)+', kryds-udgave: '+str(p10)+').'}")
     if review:
         out.append(f"\n⚠ **REVIEW (tæller ikke som flag):** {rev_hi} høj-signal + {rev_yr} år-mismatch prosa-citationer uden bib-match — se §3.A. \"0 flag\" udelukker IKKE citerede-men-manglende referencer; gennemgå §3.A.")
     open(a.out,'w',encoding='utf-8').write("\n".join(out))
