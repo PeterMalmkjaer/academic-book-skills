@@ -1,0 +1,6 @@
+{
+  "name": "academic-book-layout-audit",
+  "version": "1.1.0",
+  "description": "Pre-press/layout geometry audit of a typeset LaTeX book: overfull hbox by severity, broken boxes followed by void, small-tail inventory, float distance, folio parity (arabic 1 must fall on a recto), blank pages, image DPI. Read-only; can compare against an earlier PDF to tell new findings from pre-existing ones.",
+  "license": "MIT"
+}
