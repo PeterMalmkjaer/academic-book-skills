@@ -3,6 +3,90 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [1.4.0] — 2026-08-21
+
+### Added
+- **`pm-konsistens-audit` → 0.12.0: sektion 11 — krydshenvisninger på tværs af udgaver**
+  (`--mirror`). En henvisning kan pege på et afsnit, der **findes**, og alligevel være den
+  forkerte; sektion 2 og 6 verificerer eksistens, ikke korrekthed, og er blinde over for den
+  fejl. I et spejlet tosproget værk skal de to udgaver derimod henvise til de samme numre ---
+  kapitelstrukturen er den samme --- så enhver divergens er en fejl i præcis én af dem.
+  Sektion 11 sammenligner fordelingen af afsnits-, float- og boks-henvisninger kapitel for
+  kapitel og siger, hvor de ikke stemmer. Den dømmer ikke mening; hvilken udgave der har ret,
+  afgør mennesket (normalt facit-udgaven).
+  Anledningen var ti forkerte kapitel-14-henvisninger i PM-bogens engelske kap17, som den
+  eksisterende audit meldte som "0 dangling" --- fordi de alle pegede på afsnit, der fandtes.
+- **`academic-book-layout-audit` 1.0.0 → 1.1.0: Check D — folio-paritet** (`scripts/check_d.py`).
+  Kontrollen har eksisteret som ad hoc-script siden PM-bogens §CCXXI, men aldrig i skillen ---
+  og derfor blev den skrevet forfra i hver session. Nu er den en del af familien.
+  **Reglen:** PDF-side 1 er recto, så den første arabisk nummererede side (folio "1") skal ligge
+  på en ULIGE PDF-side. Ellers er hvert opslag i bogen spejlvendt. Fejlen opstår kun, når
+  frontmatteret ændres med et ULIGE antal sider; brødtekst og bagmatter kan ikke bryde den.
+  Scriptet tjekker samtidig folio-placering (venstre på verso, højre på recto) og skelner
+  `plain`-sidernes centrerede folioer fra fejl.
+
+### Fixed
+- **`pm-konsistens-audit`: float-mønstrene dækkede kun den danske udgave.** `check_refs` matchede
+  `Figur`/`Tabel` og aldrig `Figure`/`Table` eller registerets forkortede `Fig N.M`. Den engelske
+  udgaves float-henvisninger blev altså **aldrig kontrolleret**. Nu dækker mønstrene begge
+  udgaver og den forkortede form.
+- **`pm-konsistens-audit`: konceptregister og appendiks blev kun set af sektion 5.** De er
+  selvstændige henvisningsflader --- registeret peger på figurer, tabeller og afsnit præcis som
+  brødteksten --- men `check_refs` scannede kun kapitelfilerne. De fodres nu ind på lige fod via
+  `extra_files`. Konkret fund i PM-bogen: registerposter, der pegede på Figur 14.1 og §14.3/§14.4
+  efter en omnummerering, blev ikke fanget af nogen sektion.
+- **ALVORLIG i den ad hoc-udgave, Check D afløser: paritetstjekket meldte fejl på en korrekt bog,
+  hver eneste gang.** Arabertal 1 falder ALTID på en kapitelåbning, og kapitelåbninger bruger
+  `plain` pagestyle med CENTRERET folio. Koden sprang centrerede folioer over med `continue` ---
+  FØR den registrerede tallet --- så `arabic1` forblev `None`. I PM-bogen ligger folioen 5,7 pt
+  (DA) og 7,1 pt (EN) fra sidemidten, altså langt inden for toleransen.
+  To principper er nu bygget ind og dokumenteret i SKILL.md: **(1) mål først, klassificér
+  bagefter**; **(2) "ikke målt" er ikke "målt og fejlet"** --- de to udfald har hver sin
+  tilstand og hver sin exitkode (0 / 1 / 2), så scriptet kan bruges som gate uden at råbe ulv.
+- Kandidatvalget tog den SIDSTE matchende span i bundbåndet, hvilket er vilkårligt, hvis båndet
+  indeholder andet end folioen. Nu vælges den nederste span, ved uafgjort den yderste.
+
+### Documentation
+- SKILL.md: nyt afsnit om Check D med fælden, reglen og hvornår tjekket skal køres; Check D
+  tilføjet til sektionstabellen og til triggerne ("folio-paritet", "starter kapitel 1 på
+  højreside", "recto/verso"); to nye grænser noteret (folio antages i det nederste 65pt-bånd;
+  frontmatter antages romertalsnummereret).
+- SKILL.md, Forudsætning: opskrift på **offline-installation af PyMuPDF** fra et lokalt hjul,
+  for miljøer hvor `pip3 install` afvises af en egress-proxy (403) --- plus påmindelsen om at
+  kontrollere, HVOR pakken landede, da en `--user`-installation i et sessionshjem forsvinder.
+
+### Testet
+Positivt mod PM-bogens to udgaver (DA 627 s., EN 433 s., Linux-build): arabertal-1 på s. 31 og
+s. 27, begge ULIGE ✓, 0 forkert placerede folioer (DA 589 korrekte, EN 385), exit 0. Alle tal
+identiske med den gamle implementerings --- kun detektionen er ændret, ikke placeringskontrollen.
+**Negativt:** en kopi af DA-PDF'en med én frontmatter-side fjernet giver `PARITETSFEJL` + 587
+forkert placerede folioer, exit 1; en PDF uden folioer giver `INKONKLUSIV`, exit 2. Et
+paritetstjek, der aldrig har set en paritetsfejl, er ikke afprøvet.
+
+## [1.3.0] — 2026-08-19
+
+### Added
+- **NY SKILL: `academic-book-layout-audit` 1.0.0** --- familiens manglende geometri-modul.
+  De øvrige skills spørger "er teksten rigtig og konsistent?"; denne spørger "renderer bogen
+  rigtigt på papir?". Arbejder på den SATTE PDF, fordi fejlklassen er usynlig i `.tex`.
+  Sektioner: **A** overfull `\hbox` klassificeret efter pt (≥50 = klippes i tryk);
+  **Check A** brudt boks hvor fortsættelsen efterfølges af TOMRUM (kritisk --- 12 af 17
+  læringsmålsbokse i PM-bogen, forældreløs hale ned til 11 ord); **Check B** småhale-inventar
+  (kosmetisk, skal UDSKYDES til sidste paginering); **Check C** float-afstand, type-korrekt
+  (Figur og Tabel deler numre); **E** blanke sider; **G** billede-dpi.
+- **`--compare tidligere.pdf`** --- rapporterer pr. fundklasse om et fund er NYT eller
+  præeksisterende. Besvarer det spørgsmål en operatør altid har efter en rettelsesrunde:
+  "har jeg lige ødelagt noget?" I PM-bogen viste den, at 6 blanke sider og 1 fremad-float
+  fandtes i alle builds fra samme dag --- altså ikke indført af dagens rettelser.
+- **`--preamble main.tex`** --- udleder farve→bokstype-kortet fra `\definecolor` +
+  `\newtcolorbox`, så rapporten siger `theorybox` frem for RGB. Håndterer at flere miljøer
+  deler farve (PM-bogen: `learninggoals / chaptersummary`).
+
+### Testet
+Mod PM-bogens danske udgave (619 s., Mac-build): 0 kritiske overfull, 0 boks-tomrum,
+12 småhaler, 1 fremad-float, 6 blanke sider --- og regressionskontrollen bekræftede, at
+ingen af dem var nye.
+
 ## [1.2.0] — 2026-08-19
 
 ### Added
