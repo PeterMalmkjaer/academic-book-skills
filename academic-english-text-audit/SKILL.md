@@ -12,7 +12,8 @@ description: >-
   "audit the afterword", "semantic/hermeneutic analysis with scores". Scores BODY PROSE
   plus the text's own tables/figures; quotations, boxes and the reference list are not
   scored as prose. Sister skill of akademisk-tekstaudit (Danish).
----
+metadata:
+  version: "1.5"---
 
 # Academic text audit (English)
 

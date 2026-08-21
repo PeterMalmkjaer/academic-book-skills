@@ -1,6 +1,8 @@
 ---
 name: faglig-bog
 description: Hjælper med at skrive, strukturere og producere en akademisk lærebog eller monografi inden for samfundsvidenskab — særligt i LaTeX. Brug denne skill når brugeren nævner bogprojekt, lærebog, monografi, kapitelstruktur, LaTeX-kompilering, referencehåndtering, konceptregister, forord, copyright, front matter, trykkvalitet eller oversættelse af en faglig bog. Brug den også når brugeren nævner AI-assisteret bogskrivning, terminologisk nøgle, rød tråd i en bog, kapitelskabelon, eller nummeringssystem for bokse og cases.
+metadata:
+  version: 0.5.0
 ---
 
 # Faglig Bog — Skabeloner og Praksis

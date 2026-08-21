@@ -1,6 +1,6 @@
 {
   "name": "academic-danish-klarsprog",
-  "version": "1.0",
+  "version": "0.1.0",
   "description": "Register- og klarsprogsløft for danske akademiske manuskripter via valgbare stilprofiler (LIX, nominal/verbalstil, anglicismer, sætningsrytme). Rører aldrig mening, tal eller citater.",
   "author": {
     "name": "Peter Malmkjaer"

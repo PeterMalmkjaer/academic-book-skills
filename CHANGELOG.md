@@ -3,6 +3,60 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [1.5.0] — 2026-08-21
+
+### Changed
+- **ÉN version pr. skill, i BEGGE filer, holdt identiske.** Repoet havde to konkurrerende
+  konventioner, og ingen af dem blev håndhævet: seks skills havde et tal i `SKILL.md`
+  (`metadata.version`) og et andet i `plugin.json`, otte havde slet ingen version i SKILL.md,
+  og kun `academic-book-layout-audit` havde de to i overensstemmelse.
+  **Reglen, der er anvendt:** det VEDLIGEHOLDTE tal vinder, og intet tal er opfundet.
+  Git-historikken afgjorde hvilket: `plugin.json`-værdien `1.0` blev sat identisk på seks
+  skills i ét bulk-commit (e18e4d9) og aldrig rørt siden --- en placeholder --- mens
+  `SKILL.md`s tal (0.1.0 / 0.1.2 / 0.1.3) er forskellige pr. skill og faktisk bumpet med
+  feature-commits. `pm-konsistens-audit` er den omvendte: dens `plugin.json` ER blevet passet
+  (0.7.4 → 0.8.0 → 0.9.0 → 0.9.2), mens SKILL.md aldrig har haft en version.
+
+| Skill | før (SKILL.md / plugin.json) | nu |
+|---|---|---|
+| `academic-book` | — / 0.5.0 | **0.5.0** |
+| `academic-book-layout-audit` | 1.1.0 / 1.1.0 | 1.1.0 (uændret) |
+| `academic-danish-ai-tell-audit` | 0.1.2 / 1.0 | **0.1.2** |
+| `academic-danish-consistency` | 0.1.0 / 1.0 | **0.1.0** |
+| `academic-danish-engagement-audit` | 0.1.0 / 1.0 | **0.1.0** |
+| `academic-danish-klarsprog` | 0.1.0 / 1.0 | **0.1.0** |
+| `academic-english-ai-tell-audit` | 0.1.2 / 1.0 | **0.1.2** |
+| `academic-english-engagement-audit` | 0.1.0 / 1.0 | **0.1.0** |
+| `academic-english-text-audit` | — / 1.5 | **1.5** |
+| `academic-source-verification` | 0.1.3 / 0.6.1 | **0.1.3** |
+| `academic-translation-da-en` | — / 0.2 | **0.2** |
+| `akademisk-tekstaudit` | — / 1.5 | **1.5** |
+| `faglig-bog` | — / 0.5.0 | **0.5.0** |
+| `pm-bog` | — / 0.1.0 | **0.1.0** |
+| `pm-konsistens-audit` | — / 0.9.2 | **0.12.0** |
+
+- **`pm-konsistens-audit`s manifest bragt ajour: 0.9.2 → 0.12.0.** Den var tre udgivelser
+  bagud --- 0.10.0 (sektion 9, epigrafer) og 0.12.0 (sektion 11, krydsreference-spejl) bumpede
+  aldrig manifestet.
+
+### Fixed
+- **`version: 1.5` uden anførselstegn er ikke en streng i YAML --- det er tallet 1.5.**
+  Fanget af den skærpede preflight: `academic-english-text-audit`, `academic-translation-da-en`
+  og `akademisk-tekstaudit` havde tocifrede versioner, som YAML læste som **float**, så de
+  aldrig kunne sammenlignes med `plugin.json`s streng. Nu sat i anførselstegn.
+  Trecifrede versioner (`0.1.0`) rammes ikke --- de er ikke gyldige tal og parses som strenge.
+  Fælden er derfor tavs, indtil nogen skriver en tocifret version.
+
+### Tooling
+- **`push.sh`** --- genbrugeligt commit-/push-script for repoet. Rydder de `.git/index.lock`-rester,
+  Cowork-VM'en efterlader (den må ikke slette filer, så git kan ikke rydde sine egne låse);
+  kører preflight; viser hvad der ville blive committet; kræver `JA`; og **verificerer til sidst
+  lokal `HEAD` mod `git ls-remote`**, så et push, der siger "done" uden at være landet, fanges.
+  Committer aldrig `_to_delete/`, `*.skill` eller `push*.sh`. Tørkørsel er default.
+- **Preflight skærpet:** versionsdrift, manglende version i ét af de to felter, og ikke-streng
+  YAML-version er nu **FEJL**, ikke noter. Den kunne have fanget hele oprydningen ovenfor, før
+  den nåede at blive publiceret.
+
 ## [1.4.0] — 2026-08-21
 
 ### Added

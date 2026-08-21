@@ -1,6 +1,6 @@
 {
   "name": "academic-danish-consistency",
-  "version": "1.0",
+  "version": "0.1.0",
   "description": "Bogdækkende dansk house-style-konsistensaudit: udleder stilark og termbase fra kapitlerne og flager afvigelser — omskriver aldrig stiltiende.",
   "author": {
     "name": "Peter Malmkjaer"

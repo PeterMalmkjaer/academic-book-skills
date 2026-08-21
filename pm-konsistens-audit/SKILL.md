@@ -13,6 +13,8 @@ description: >-
   konsistens", "Appendix B konsistens", "dangling
   references", "ureferede figurer", "kryds-udgave krydsref", "epigraf", "kapitelcitat", "motto uden kilde". OPT-IN. Flagger og foreslår — ændrer aldrig
   mening/tal/citater uden eksplicit OK.
+metadata:
+  version: 0.12.0
 ---
 
 # PM-konsistens-audit

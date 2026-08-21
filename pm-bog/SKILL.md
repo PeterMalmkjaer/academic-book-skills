@@ -1,6 +1,8 @@
 ---
 name: pm-bog
 description: OPT-IN ONLY — Do NOT read or use this skill unless the user explicitly asks for it by name (e.g., "brug pm-bog", "use pm-bog skill", "hent pm-bog"). This skill provides chapter structure, LaTeX build instructions, box definitions, known-good baseline facts, and workflow patterns for the Performance Management textbook (PM-bogen) at CBS. Never trigger automatically based on topic detection.
+metadata:
+  version: 0.1.0
 ---
 
 # PM-Bog Skill — v28 Baseline (2026-03-17)

@@ -10,7 +10,8 @@ description: >-
   and reference fidelity. Also covers journal-article manuscripts derived from such
   projects (v0.2). NOT a general-purpose or literary translation tool;
   NOT for short texts, marketing copy, or non-academic prose.
----
+metadata:
+  version: "0.2"---
 
 # Academic translation: Danish → English (DA▸EN)
 

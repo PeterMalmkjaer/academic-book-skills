@@ -1,6 +1,6 @@
 {
   "name": "academic-source-verification",
-  "version": "0.6.1",
+  "version": "0.1.3",
   "description": "Three-check citation verification (metadata/DOI plus content) and a reference-ledger builder for academic manuscripts — flags unverifiable sources, never fabricates references.",
   "author": {
     "name": "Peter Malmkjaer"

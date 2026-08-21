@@ -1,6 +1,8 @@
 ---
 name: academic-book
 description: Helps write, structure, and produce an academic textbook or monograph in the social sciences — especially in LaTeX. Use this skill when the user mentions a book project, textbook, monograph, chapter structure, LaTeX compilation, reference management, concept register, preface, copyright, front matter, print quality, or translation of an academic book. Also use when the user mentions AI-assisted academic writing, terminological key, red thread in a book, chapter template, or numbering system for boxes and cases.
+metadata:
+  version: 0.5.0
 ---
 
 # Academic Book — Templates and Best Practices

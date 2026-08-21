@@ -11,7 +11,8 @@ description: >-
   "scor teksten/kapitlet", "audit efterskriftet", "semantisk/hermeneutisk analyse med score".
   Scorer BRØDTEKST plus tekstens egne tabeller/figurer; citater, bokse og litteraturlisten
   vurderes ikke som prosa.
----
+metadata:
+  version: "1.5"---
 
 # Akademisk tekstaudit (dansk)
 
