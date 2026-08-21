@@ -3,6 +3,63 @@
 All notable changes to the `academic-book-skills` repo are documented here.
 Format loosely follows [Keep a Changelog].
 
+## [1.6.0] — 2026-08-21
+
+### Fixed — `pm-konsistens-audit` 0.12.0 → 0.13.0
+
+Fem defekter, alle af samme klasse: **et mønster læste LaTeX-kilde, som om den var ren tekst.**
+De blev fundet ved at læse de passager, værktøjet udtalte sig om — og hver gang havde værktøjet
+uret, ikke bogen.
+
+- **ALVORLIG: kapitelnummeret blev læst af hele stien, ikke af filnavnet.** `load_sources`
+  brugte `re.search(r'(\d+)', f)`. Kørt fra fx `/root/b36/da/kap07_body.tex` blev **hver eneste
+  fil til kapitel 36**, hvorefter sektion 11 ikke fandt et matchende kapitel i spejlet, sprang
+  alt over og skrev *"ingen divergens --- de to udgaver henviser ens ✓"* på en bog med **38**
+  divergerende henvisninger. Samme fejlklasse som layout-skillens Check D: **"ikke målt"
+  rapporteret som "målt og i orden"**. Rettet til `os.path.basename(f)`.
+- **Boksenes egne titler blev talt som henvisninger.** `\begin{definitionbox}[Definition 14.1:
+  Feedback]` indeholder strengen "Definition 14.1". Bogens 198 nummererede bokse blev talt som
+  henvisninger til sig selv.
+- **`~` og `\ ` (beskyttede mellemrum) gjorde henvisninger og citationer usynlige.**
+  `Eksempel~5.1`, `afsnit~7.3`, `O'Boyle et al.\ (2012)`, `Coase, R.H.\ (1937)`. Hverken `~`
+  eller `\ ` er whitespace. **15 henvisninger og 9--10 % af bogens årstalscitationer** var
+  usynlige for auditten. Det er den direkte grund til, at to manglende bib-poster har kunnet stå
+  i en færdig bog.
+- **`\&` brød forfatterkæden.** `Paulhus \& Williams (2002)` registrerede kun *sidste*
+  forfatter. I den danske udgave gælder det **280** citationer.
+- **Store/små bogstaver og valgfrie tuborgklammer.** `perspektivboks 13.1` med lille p gav en
+  falsk divergens; `[{Perspektivboks 12.2: ...}]` fik en boks, der FINDES, til at se manglende ud.
+
+### Added
+- **`norm_latex()`** --- ét fælles normaliseringstrin, brugt af både sektion 3 og sektion 11, så
+  rettelsen ikke skal gentages hver gang et nyt mønster skrives. Maskerer boksdefinitioner og
+  `\ref`-kald, normaliserer `~`/`\ `/`\,`/`\&` og kollapser whitespace.
+- Sektion 11's mønstre er nu case-insensitive og sammenligner små bogstaver.
+- Citationsparseren accepterer nu komma uden foranstillet mellemrum (`Coase, R.H.`) og springer
+  initialer med punktum over.
+
+### Testet --- før/efter på samme filer
+
+| Kontrol | 0.12.0 | 0.13.0 |
+|---|---|---|
+| §11 kørt fra sti **med** cifre | "ingen divergens ✓" | **13 par / 38 instanser** |
+| §11 kørt fra sti **uden** cifre | 12 par | **13 par / 38 instanser** |
+| Rapporterne fra de to stier | forskellige | **byte-identiske** |
+| §3.A ser `Coase (1937)` | nej | **ja** |
+| §3.A ser `Oboyle (2012)` | nej | **ja** (og melder korrekt: efternavn findes, år 2016) |
+| §3.A review-kandidater | 52 | 63 |
+| **Alle øvrige sektioner (§1--§10)** | 85/1/1/1/1/1/2/8/2 | **uændret** |
+
+**Krydsvalidering:** en uafhængig måling, skrevet uden for skillen, gav præcis samme tal ---
+**13 par, 27 instanser kun i DA, 11 kun i EN**. To uafhængige implementeringer er enige.
+Fire af de nyfundne divergenser er desuden verificeret ved at **læse passagen** i begge udgaver
+(kap01 Teoriboks 1.2, kap09 afsnit 7.3, kap15 Case 14.2 ×2) --- alle fire er reelle.
+
+### Kendt, ikke rettet
+Den parenteserede citationsgren parrer hvert navn med *hvert* årstal i parentesen, hvilket giver
+den falske `Oboyle (1997)` fra `(Kruse \& Blasi, 1997; O'Boyle, ..., 2016)`. Det kræver en anden
+parsingstrategi (nærmeste årstal pr. navn) og ligger for sig.
+
 ## [1.5.0] — 2026-08-21
 
 ### Changed

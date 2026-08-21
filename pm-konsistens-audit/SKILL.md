@@ -14,7 +14,7 @@ description: >-
   references", "ureferede figurer", "kryds-udgave krydsref", "epigraf", "kapitelcitat", "motto uden kilde". OPT-IN. Flagger og foreslår — ændrer aldrig
   mening/tal/citater uden eksplicit OK.
 metadata:
-  version: 0.12.0
+  version: 0.13.0
 ---
 
 # PM-konsistens-audit
@@ -293,6 +293,37 @@ Den fanger uenighed mellem udgaver. Den fanger ikke en fejl, der staar ENS begge
 og den siger intet om, hvorvidt en henvisning peger paa det rigtige INDHOLD, naar begge
 udgaver er enige om nummeret. Til det findes der ingen automatik — kun laesning.
 Se ogsaa metodenoten under "Forbehold".
+
+
+## LaTeX-normalisering (v0.13.0) — laest dyrt, skrevet EET sted
+
+Alle skillens moenstre laeser LaTeX-kilde. LaTeX-kilde er fuld af typografi, der ligner tekst,
+og fire gange i traek har et moenster her rapporteret noget forkert af netop den grund. Derfor
+gaar al tekst nu gennem `norm_latex()` foer noget taelles.
+
+| Faelde | Hvad den gjorde, foer den blev lukket |
+|---|---|
+| **Boksens egen titel** | `\begin{definitionbox}[Definition 14.1: Feedback]` indeholder strengen "Definition 14.1". Bogens 198 nummererede bokse blev talt som henvisninger til sig selv. |
+| **Store/smaa bogstaver** | Ét sted skriver DA `perspektivboks 13.1` med lille p. Moenstret kraevede stort P → falsk divergens. |
+| **`~` og `\ `** | `Eksempel~5.1`, `afsnit~7.3`, `O'Boyle et al.\ (2012)`. Hverken `~` eller `\ ` er whitespace, saa `\s+` matcher dem ikke. **15 henvisninger og ~10 % af bogens citationer var usynlige.** |
+| **Valgfrie tuborgklammer** | `\begin{psychbox}[{Perspektivboks 12.2: ...}]` — `[` efterfulgt af `{` broed moenstret, saa en boks der FINDES blev rapporteret som manglende. |
+| **`\&` i forfatterkaeder** | `Paulhus \& Williams (2002)` registrerede kun *sidste* forfatter. I den danske udgave gaelder det **280** citationer. |
+
+**Reglen, der foelger:** et moenster, der scanner LaTeX, skal normalisere `~`, `\ `, `\,`, `\&`,
+versaler og valgfrie tuborgklammer FOER det taeller noget — og et tal fra en ny scanner skal
+verificeres mod mindst én laest passage, foer det rapporteres.
+
+### Kapitelnummeret laeses af FILNAVNET, ikke af stien
+
+`load_sources` brugte `re.search(r'(\d+)', f)` paa hele stien. Koert fra fx
+`/root/b36/da/kap07_body.tex` blev **hver eneste fil til kapitel 36**, hvorefter sektion 11
+ikke fandt et eneste matchende kapitel i spejlet og skrev:
+
+> `- ingen divergens --- de to udgaver henviser ens ✓`
+
+Paa en bog med 38 divergerende henvisninger. **"Ikke maalt" blev rapporteret som "maalt og i
+orden"** — samme fejlklasse som layout-skillens Check D. Rettet til `os.path.basename(f)`.
+
 
 ## Rør-ikke / beskyttet
 Citater, citationer/forfattere/år/DOI, definerede term-navne, boks-ordlyd, tal.

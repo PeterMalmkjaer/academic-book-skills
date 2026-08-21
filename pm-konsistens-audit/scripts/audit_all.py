@@ -15,7 +15,10 @@ import re, glob, argparse, collections, sys, os
 def load_sources(pat):
     src={}
     for f in sorted(glob.glob(pat)):
-        m=re.search(r'(\d+)', f);  ch=int(m.group(1)) if m else 0
+        # v0.13.0: basename, IKKE hele stien. Med hele stien blev
+        # /root/b36/da/kap07_body.tex til kapitel 36 for ALLE filer,
+        # hvorefter sektion 11 sprang alt over og skrev 'ingen divergens'.
+        m=re.search(r'(\d+)', os.path.basename(f));  ch=int(m.group(1)) if m else 0
         src[f]=(ch, open(f, encoding='utf-8').read())
     return src
 
@@ -157,12 +160,21 @@ def parse_bib(bib_path):
     return keys
 
 def _prose_citations(text):
+    # v0.13.0: LaTeX-afstand foerst. 'O'Boyle et al.\\ (2012)' og
+    # 'Coase, R.H.\\ (1937)' var USYNLIGE, fordi \\  ikke er whitespace;
+    # og 'Paulhus \\& Williams (2002)' registrerede kun sidste forfatter.
+    text=text.replace('~',' ').replace('\\ ',' ').replace('\\,',' ').replace('\\&','&')
     text=re.sub(r'(?<!\\)%.*','',text)          # fjern kommentarer
     text=_deacc(text)                             # ö->o, é->e (undgå trunkering)
     text=re.sub(r"'s\b","",text)                 # fjern genitiv-'s (Milgrom's->Milgrom)
     pairs=set()
     NAME=r"[A-Z][A-Za-z'\-]+"
-    for m in re.finditer(r'('+NAME+r'(?:\s+(?:og|and|&|et\s+al\.?|,)\s*[A-Z]?[A-Za-z'+r"'"+r'\-]*)*)\s*\((\d{4})[a-z]?\)', text):
+    # v0.13.0: (a) komma maa staa UDEN mellemrum foran ("Coase, R.H."), og
+    # (b) initialer med punktum skal kunne springes over, ellers naar kaeden
+    # aldrig frem til aarstallet. Begge fandtes i bogens Kilder-lister.
+    SEP  = r"(?:\s*,\s*|\s+(?:og|and|&|et\s+al\.?)\s*)"
+    INIT = r"(?:[A-Z]\.\s*)*"
+    for m in re.finditer(r'('+NAME+r'(?:'+SEP+INIT+r"[A-Z]?[A-Za-z'\-]*)*)\s*\((\d{4})[a-z]?\)", text):
         yr=m.group(2)
         for n in re.findall(NAME, m.group(1)):
             ns=_norm_sur(n)
@@ -686,9 +698,38 @@ def check_epigraph_mirror(src, mirror_pat, out, head=25, bib=None):
 
 
 
-XREF_SEC   = re.compile(r'(?:[Aa]fsnit|Sections?)\s+(\d+\.\d+)')
-XREF_FLOAT = re.compile(r'(?:Figur|Figure|Fig\.?|Tabel|Table)\s+(\d+\.\d+)')
-XREF_BOX   = re.compile(r'(?:Definition|Teoriboks|Theory Box|Perspektivboks|Perspective Box|Case|Eksempel|Example)\s+(\d+\.\d+)')
+
+# ===========================================================================
+# LaTeX-NORMALISERING (v0.13.0) — bygget efter fire paa hinanden foelgende
+# maalefejl, som ALLE skyldtes typografi i kilden og ikke fejl i bogen:
+#   1. boksenes EGNE titler ("\\begin{definitionbox}[Definition 14.1: ...]")
+#      blev talt som henvisninger til sig selv — 198 falske "henvisninger".
+#   2. store/smaa bogstaver: DA skriver "perspektivboks 13.1" med lille p.
+#   3. "~" og "\ " (beskyttede mellemrum): "Eksempel~5.1" var usynlig, fordi
+#      moenstret kraevede \s+. 15 DA-henvisninger forsvandt.
+#   4. valgfrie tuborgklammer: "[{Perspektivboks 12.2: ...}]" brood moenstret,
+#      saa en boks der FINDES blev rapporteret som manglende.
+# Samme klasse som citationsparserens \ -fejl. Derfor ET sted, brugt af alle.
+# ===========================================================================
+_BOXDEF_RX = re.compile(
+    r'\\begin\{(?:definitionbox|casebox|theorybox|perspectivebox|psychbox|socbox)\}'
+    r'\[\{?[^\]]*\]')
+
+def norm_latex(text, mask_boxdefs=True, mask_refs=True):
+    """Gør LaTeX-kilde sammenlignelig som tekst. Laengden bevares IKKE."""
+    text = re.sub(r'(?<!\\)%.*', '', text)              # kommentarer
+    if mask_refs:
+        text = re.sub(r'\\(?:eq|c|C|auto)?ref\{[^}]*\}', '\x00', text)
+    if mask_boxdefs:
+        text = _BOXDEF_RX.sub('\x00', text)              # boksens egen titel
+    text = text.replace('~', ' ').replace('\\ ', ' ').replace('\\,', ' ')
+    text = text.replace('\\&', '&')
+    text = re.sub(r'[ \t]+', ' ', text)
+    return text
+
+XREF_SEC   = re.compile(r'(?:afsnit|sections?)\s+(\d+\.\d+)', re.I)
+XREF_FLOAT = re.compile(r'(?:figur|figure|fig\.?|tabel|table)\s+(\d+\.\d+)', re.I)
+XREF_BOX   = re.compile(r'(?:definition|teoriboks|theory box|perspektivboks|perspective box|case|eksempel|example)\s+(\d+\.\d+)', re.I)
 
 def check_xref_mirror(src, mirror_pat, out, kinds=('afsnit','float','boks')):
     """Sektion 11 [kraever --mirror]: sammenlign krydshenvisningernes FORDELING
@@ -711,7 +752,7 @@ def check_xref_mirror(src, mirror_pat, out, kinds=('afsnit','float','boks')):
     mir={}
     for f in sorted(glob.glob(mirror_pat)):
         m=re.search(r'(\d+)', os.path.basename(f))
-        if m: mir[int(m.group(1))]=open(f, encoding='utf-8').read()
+        if m: mir[int(m.group(1))]=norm_latex(open(f, encoding='utf-8').read())
     if not mir:
         out.append(f"- ingen filer matchede `{mirror_pat}` --- sprunget over\n"); return 0
     PATS={'afsnit':XREF_SEC,'float':XREF_FLOAT,'boks':XREF_BOX}
@@ -720,8 +761,8 @@ def check_xref_mirror(src, mirror_pat, out, kinds=('afsnit','float','boks')):
         if ch not in mir: continue
         for kind in kinds:
             rx=PATS[kind]
-            a=collections.Counter(rx.findall(txt))
-            b=collections.Counter(rx.findall(mir[ch]))
+            a=collections.Counter(x.lower() for x in rx.findall(norm_latex(txt)))
+            b=collections.Counter(x.lower() for x in rx.findall(mir[ch]))
             if a==b: continue
             only_a=a-b; only_b=b-a
             flags+=1
