@@ -10,7 +10,7 @@ Brug:
       --register konceptregister_body.tex --appendix 09_Back_Matter/appendiks_b_teorioversigt.tex \
       --out KATEGORI_AUDIT.md
 """
-import re, glob, argparse, collections, sys
+import re, glob, argparse, collections, sys, os
 
 def load_sources(pat):
     src={}
@@ -74,7 +74,7 @@ def check_sequential(nums, fig, tab, out):
     out.append(("- Alle kategorier fortløbende ✓" if prob==0 else f"- **{prob} afvigelser**")+"\n")
     return prob
 
-def check_refs(src, boxtitles, figset, tabset, out):
+def check_refs(src, boxtitles, figset, tabset, out, extra_files=None):
     pool={'Definition':set(),'Teoriboks':set(),'Perspektivboks':set(),'Case':set(),'Figur':figset,'Tabel':tabset}
     # boks-numre pr. kategori
     catof={'Definition':'Definition','Teoriboks':'Teoriboks','Perspektivboks':'Perspektivboks','Case/Eksempel':'Case'}
@@ -87,12 +87,21 @@ def check_refs(src, boxtitles, figset, tabset, out):
             elif c=='Teoriboks': pool['Teoriboks'].add(n)
             elif c=='Perspektivboks': pool['Perspektivboks'].add(n)
             elif c=='Case/Eksempel': pool['Case'].add(n)
+    # v0.12.0: floatformerne daekker nu BEGGE udgaver og den forkortede registerform.
+    # Foer: kun 'Figur'/'Tabel' -> EN-udgavens 'Figure'/'Table' og registerets 'Fig N.M'
+    # blev ALDRIG kontrolleret. Se SKILL.md v0.12.0.
     pat={'Definition':r'Definition (\d+\.\d+)','Teoriboks':r'(?:Teoriboks|Theory Box) (\d+\.\d+)',
          'Perspektivboks':r'(?:Perspektivboks|Perspective Box) (\d+\.\d+)','Case':r'(?:Case|Example|Eksempel) (\d+\.\d+)',
-         'Figur':r'Figur (\d+\.\d+)','Tabel':r'Tabel (\d+\.\d+)'}
+         'Figur':r'(?:Figur|Figure|Fig\.?) (\d+\.\d+)','Tabel':r'(?:Tabel|Table) (\d+\.\d+)'}
     out.append("## 2. Reference-korrekthed (hårdkodede henvisninger)\n")
     dangling=0
-    for f,(ch,txt) in src.items():
+    # v0.12.0: konceptregister og appendiks er SELVSTAENDIGE henvisningsflader og
+    # scannes nu paa lige fod med kapitlerne. Foer blev de kun set af sektion 5.
+    scan=dict(src)
+    for ef in (extra_files or []):
+        try: scan[ef]=(0, open(ef, encoding='utf-8').read())
+        except OSError: pass
+    for f,(ch,txt) in scan.items():
         for i,line in enumerate(txt.splitlines(),1):
             if '\\begin{' in line: continue
             for cat,p in pat.items():
@@ -676,6 +685,54 @@ def check_epigraph_mirror(src, mirror_pat, out, head=25, bib=None):
     return n
 
 
+
+XREF_SEC   = re.compile(r'(?:[Aa]fsnit|Sections?)\s+(\d+\.\d+)')
+XREF_FLOAT = re.compile(r'(?:Figur|Figure|Fig\.?|Tabel|Table)\s+(\d+\.\d+)')
+XREF_BOX   = re.compile(r'(?:Definition|Teoriboks|Theory Box|Perspektivboks|Perspective Box|Case|Eksempel|Example)\s+(\d+\.\d+)')
+
+def check_xref_mirror(src, mirror_pat, out, kinds=('afsnit','float','boks')):
+    """Sektion 11 [kraever --mirror]: sammenlign krydshenvisningernes FORDELING
+    mellem de to udgaver, kapitel for kapitel.
+
+    Hvorfor: en henvisning kan pege paa et afsnit, der FINDES, og alligevel vaere
+    den forkerte. Sektion 2 og 6 verificerer eksistens, ikke korrekthed, og er
+    blinde over for den fejl. Men i et spejlet tosproget vaerk SKAL de to udgaver
+    henvise til de samme numre --- kapitelstrukturen er den samme. Enhver
+    divergens er derfor en fejl i praecis en af udgaverne.
+
+    Tjekket doemmer ikke mening. Det sammenligner to artefakter, der skal stemme,
+    og siger hvor de ikke goer. Hvilken udgave der har ret, afgoer mennesket:
+    normalt facit-udgaven (i PM-bogen: DA).
+    """
+    import collections
+    out.append("## 11. Krydshenvisninger paa tvaers af udgaver [kraever --mirror]\n")
+    if not mirror_pat:
+        out.append("- (--mirror ikke angivet; sprunget over)\n"); return 0
+    mir={}
+    for f in sorted(glob.glob(mirror_pat)):
+        m=re.search(r'(\d+)', os.path.basename(f))
+        if m: mir[int(m.group(1))]=open(f, encoding='utf-8').read()
+    if not mir:
+        out.append(f"- ingen filer matchede `{mirror_pat}` --- sprunget over\n"); return 0
+    PATS={'afsnit':XREF_SEC,'float':XREF_FLOAT,'boks':XREF_BOX}
+    flags=0
+    for f,(ch,txt) in sorted(src.items(), key=lambda kv: kv[1][0]):
+        if ch not in mir: continue
+        for kind in kinds:
+            rx=PATS[kind]
+            a=collections.Counter(rx.findall(txt))
+            b=collections.Counter(rx.findall(mir[ch]))
+            if a==b: continue
+            only_a=a-b; only_b=b-a
+            flags+=1
+            out.append(f"- **{f} (kap. {ch}) --- {kind}-henvisninger divergerer**")
+            if only_a: out.append(f"  - kun i DENNE udgave: " + ", ".join(f"{k}x{v}" for k,v in sorted(only_a.items())))
+            if only_b: out.append(f"  - kun i SPEJLET:      " + ", ".join(f"{k}x{v}" for k,v in sorted(only_b.items())))
+            out.append(f"  - i alt: denne {sum(a.values())} vs spejl {sum(b.values())}")
+    out.append(("- ingen divergens --- de to udgaver henviser ens ✓" if flags==0
+                else f"- **{flags} kapitel/kategori-par divergerer** (afgoer mod facit-udgaven)")+"\n")
+    return flags
+
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument('--src',default='kap*_body.tex')
@@ -697,12 +754,12 @@ def main():
     out=["# KATEGORI-AUDIT (auto-genereret)\n",
          ("(main.aux fundet — Figur/Tabel verificeret)\n" if aux else "(INGEN main.aux — Figur/Tabel sprunget over; kør biber-build først)\n")]
     p1=check_sequential(nums,fig,tab,out)
-    p2=check_refs(src,titles,figset,tabset,out)
+    extra=[f for f in (a.register,a.appendix) if f and os.path.exists(f)]
+    p2=check_refs(src,titles,figset,tabset,out,extra)
     p3t=check_bib_integrity(src,a.bib,out) if os.path.exists(a.bib) else (0,0,0)
     p3,rev_hi,rev_yr=p3t
     if not os.path.exists(a.bib): out.append("## 3. Reference-integritet\n- (--bib ikke fundet; sprunget over)\n")
     p4=check_chapter_skeleton(src,out)
-    extra=[f for f in (a.register,a.appendix) if f and os.path.exists(f)]
     p5=check_bare_pointers(src,extra,out)
     p6=check_section_refs(src,out)
     struct={f:txt for f,(_,txt) in src.items()}
@@ -715,9 +772,10 @@ def main():
     p9h,p9r=check_epigraphs(src, (parse_bib(a.bib) if os.path.exists(a.bib) else {}), out, a.epigraph_head)
     p10=check_epigraph_mirror(src, a.mirror, out, a.epigraph_head,
                               (parse_bib(a.bib) if os.path.exists(a.bib) else {})) if a.mirror else 0
-    total=p1+p2+p3+p4+p5+p6+p7+p9h+p10
+    p11=check_xref_mirror(src, a.mirror, out)
+    total=p1+p2+p3+p4+p5+p6+p7+p9h+p10+p11
     review=rev_hi+rev_yr+p8+p9r
-    out.append(f"\n## Konklusion\n{'RENT ✓ — 0 afvigelser.' if total==0 else f'{total} punkter til gennemgang (numre/henvisninger: '+str(p1+p2)+', reference-integritet: '+str(p3)+', kapitel-skabelon: '+str(p4)+', typeløse box-pointere: '+str(p5)+', afsnits-henvisninger: '+str(p6)+', chapter*-headers: '+str(p7)+', epigrafer: '+str(p9h)+', kryds-udgave: '+str(p10)+').'}")
+    out.append(f"\n## Konklusion\n{'RENT ✓ — 0 afvigelser.' if total==0 else f'{total} punkter til gennemgang (numre/henvisninger: '+str(p1+p2)+', reference-integritet: '+str(p3)+', kapitel-skabelon: '+str(p4)+', typeløse box-pointere: '+str(p5)+', afsnits-henvisninger: '+str(p6)+', chapter*-headers: '+str(p7)+', epigrafer: '+str(p9h)+', kryds-udgave epigraf: '+str(p10)+', kryds-udgave krydsref: '+str(p11)+').'}")
     if review:
         out.append(f"\n⚠ **REVIEW (tæller ikke som flag):** {rev_hi} høj-signal + {rev_yr} år-mismatch prosa-citationer uden bib-match — se §3.A. \"0 flag\" udelukker IKKE citerede-men-manglende referencer; gennemgå §3.A.")
     open(a.out,'w',encoding='utf-8').write("\n".join(out))

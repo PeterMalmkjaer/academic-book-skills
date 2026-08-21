@@ -9,10 +9,9 @@ description: >-
   orphan-nøgler, nøglenavn↔år-mismatch); UREFEREDE FLOATS (label uden ref-henvisning);
   og EPIGRAFER (kapitelåbningens citat: ordret citat uden kildeår, kildeår uden bib-post,
   attributions- og citationstegns-konvention).
-  Triggere: "kategori-audit", "reference-integritet", "prosa citation uden nøgle", "dublet
-  reference", "bib-audit", "fortløbende numre", "tjek henvisninger", "konceptregister
-  konsistens", "Appendix B konsistens", "peger figur/tabel-referencer rigtigt", "dangling
-  references", "ureferede figurer", "epigraf", "kapitelcitat", "motto uden kilde". OPT-IN. Flagger og foreslår — ændrer aldrig
+  Triggere: "kategori-audit", "reference-integritet", "dublet reference", "bib-audit", "tjek henvisninger", "konceptregister
+  konsistens", "Appendix B konsistens", "dangling
+  references", "ureferede figurer", "kryds-udgave krydsref", "epigraf", "kapitelcitat", "motto uden kilde". OPT-IN. Flagger og foreslår — ændrer aldrig
   mening/tal/citater uden eksplicit OK.
 ---
 
@@ -244,6 +243,54 @@ python3 scripts/audit_all.py --src "kap*_body.tex" --bib references.bib \
 **Nyt i §9 samtidig:** `--epigraph-head N` gør de 25 linjer konfigurerbare, og **9E** rapporterer
 nu hvilke kildefiler der slet INGEN epigraf har — før blev de sprunget lydløst over, så en
 glemt epigraf var usynlig.
+
+
+## Sektion 11 — krydshenvisninger PAA TVAERS af udgaver (`--mirror`)
+
+**v0.12.0 (2026-08-21) — den fejlklasse, sektion 2 og 6 er blinde over for.**
+I PM-bogen henviste den engelske kap17 ti steder til forkerte afsnit i kapitel 14:
+"Section 14.3" hvor der skulle staa 14.2, "Section 14.4" hvor der skulle staa 14.1.
+Auditten meldte samtidig "425 prosa-henvisninger, alle findes ✓" — og den havde ret.
+**§14.3 findes. Den er bare ikke det afsnit, saetningen handler om.**
+Sektion 2 og 6 verificerer EKSISTENS, ikke KORREKTHED, og kan aldrig fange dette alene.
+
+Men i et spejlet tosproget vaerk findes der en deterministisk vej: de to udgaver har
+samme kapitelstruktur og SKAL derfor henvise til de samme numre. Sektion 11
+sammenligner fordelingen af afsnits-, float- og boks-henvisninger kapitel for kapitel
+mellem `--src` og `--mirror`. Divergensen i PM-bogen sprang frem med det samme:
+kap17 havde `14.3x4, 14.4x5` i EN mod `14.1x5, 14.2x3, 14.5x1` i DA.
+
+**Tjekket doemmer ikke mening.** Det sammenligner to artefakter, der skal stemme, og
+siger hvor de ikke goer. Hvilken udgave der har ret, afgoer mennesket — normalt
+facit-udgaven. Divergenser er KANDIDATER, ikke domme: en bevidst udgave-specifik
+henvisning vil ogsaa blive flaget, og det er korrekt opfoersel.
+
+```bash
+python scripts/audit_all.py --src "kap*_body_EN.tex" --aux main_EN.aux --bib references.bib \
+    --register <register> --appendix <appendiks> \
+    --mirror "../PM_Textbook(master)/kap*_body.tex" --out AUDIT.md
+```
+
+### v0.12.0 — to huller lukket i sektion 2
+
+**(a) Konceptregisteret blev aldrig scannet som henvisningsflade.** `--register` gik
+udelukkende til sektion 5 (typeloese box-pointere). Sektion 2 saa kun kapitelfilerne.
+Konsekvens i PM-bogen: da en figur blev slettet, blev registerets "Fig 14.2" dinglende,
+og auditten meldte "0 dangling ✓". Maalt, ikke antaget: koert mod prae-fix-tilstanden
+gav den gamle version 0 flag, den nye 1 flag med fil og linjenummer.
+Nu scannes register og appendiks paa lige fod med kapitlerne.
+
+**(b) Float-moenstret var kun dansk.** `pat` matchede `Figur`/`Tabel` — ikke den
+engelske udgaves `Figure`/`Table` og ikke registerets forkortede `Fig N.M`.
+Omfang i PM-bogen: **151 haardkodede floathenvisninger i de to registre**
+(DA 52 `Fig` + 29 `Tabel`, EN 45 `Fig` + 25 `Table`) havde aldrig vaeret kontrolleret.
+Nu daekker moenstret `Figur|Figure|Fig.?` og `Tabel|Table`.
+
+### Hvad sektion 11 IKKE kan
+Den fanger uenighed mellem udgaver. Den fanger ikke en fejl, der staar ENS begge steder,
+og den siger intet om, hvorvidt en henvisning peger paa det rigtige INDHOLD, naar begge
+udgaver er enige om nummeret. Til det findes der ingen automatik — kun laesning.
+Se ogsaa metodenoten under "Forbehold".
 
 ## Rør-ikke / beskyttet
 Citater, citationer/forfattere/år/DOI, definerede term-navne, boks-ordlyd, tal.
